@@ -1,5 +1,6 @@
 import { openai } from "@/lib/openai";
 import { NextResponse } from "next/server";
+import { getDestinationImage } from "@/lib/pexels";
 
 export async function POST(req: Request) {
   try {
@@ -13,12 +14,7 @@ export async function POST(req: Request) {
           content: `
 You are an AI travel recommendation engine.
 
-Your task:
-- Recommend destinations based on the user request
-- Keep recommendations practical and realistic
-- Return ONLY valid JSON
-
-Return this exact JSON structure:
+Return ONLY valid JSON.
 
 {
   "destinations": [
@@ -28,7 +24,15 @@ Return this exact JSON structure:
       "match_score": 92,
       "estimated_budget": 700,
       "best_for": "Friend groups",
-      "vibes": ["beach", "party", "cheap"]
+      "vibes": ["beach", "party", "cheap"],
+      "weather": "28°C",
+      "flight_time": "2h 10m",
+      "image": (link for a photo that shows the place),
+      "activities": [
+        "Boat Tours",
+        "Beach Clubs",
+        "Nightlife"
+      ]
     }
   ]
 }
@@ -43,27 +47,29 @@ Return this exact JSON structure:
 
     const content = completion.choices[0].message.content;
 
-    console.log("OPENAI RESPONSE:", content);
-
     let parsed;
 
     try {
       parsed = JSON.parse(content || "{}");
-    } catch (jsonError) {
-      console.error("JSON PARSE ERROR:", jsonError);
-
+    } catch {
       parsed = {
         destinations: [],
       };
     }
 
+    for (const destination of parsed.destinations) {
+        destination.image = await getDestinationImage(
+            `${destination.name} travel`
+        );
+    }
+
     return NextResponse.json(parsed);
   } catch (error) {
-    console.error("FULL ERROR:", error);
+    console.error(error);
 
     return NextResponse.json(
       {
-        error: String(error),
+        error: "Something went wrong",
       },
       {
         status: 500,

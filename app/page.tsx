@@ -1,151 +1,119 @@
-"use client";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
+import {
+  Sparkles,
+  Plus,
+  Clock3,
+  Users,
+  ArrowRight,
+} from "lucide-react";
+import Link from "next/link";
 
-import { useState } from "react";
-import { Loader2, Sparkles } from "lucide-react";
-
-type Destination = {
-  name: string;
-  summary: string;
-  match_score: number;
-  estimated_budget: number;
-  best_for: string;
-  vibes: string[];
-};
+const trips = [
+  {
+    id: "ibiza",
+    name: "Ibiza Summer Trip",
+    description: "Beach clubs, nightlife and sunsets.",
+    members: 6,
+    status: "Planning",
+  },
+  {
+    id: "tokyo",
+    name: "Tokyo Adventure",
+    description: "Food, city vibes and late night exploring.",
+    members: 3,
+    status: "Ideas",
+  },
+  {
+    id: "bali",
+    name: "Bali Escape",
+    description: "Relaxing villas and tropical beaches.",
+    members: 5,
+    status: "Voting",
+  },
+];
 
 export default function HomePage() {
-  const [prompt, setPrompt] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<Destination[]>([]);
-
-  async function generateTrip() {
-    if (!prompt) return;
-
-    setLoading(true);
-
-    try {
-      const res = await fetch("/api/generate-trip", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt }),
-      });
-
-      const text = await res.text();
-
-      console.log("API RESPONSE:", text);
-
-      const data = JSON.parse(text);
-
-      setResults(data.destinations || []);
-    } catch (error) {
-      console.error("FRONTEND ERROR:", error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
-    <main className="min-h-screen bg-neutral-950 text-white">
-      <div className="mx-auto flex max-w-6xl flex-col items-center px-6 py-20">
-        <div className="mb-12 flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-neutral-300">
-          <Sparkles className="h-4 w-4" />
-          AI Travel Planner
-        </div>
+    <DashboardShell>
+      <div className="p-10">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="mb-4 flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-neutral-300">
+              <Sparkles className="h-4 w-4" />
+              AI Travel Workspace
+            </div>
 
-        <h1 className="max-w-4xl text-center text-5xl font-bold tracking-tight md:text-7xl">
-          Describe your{" "}
-          <span className="bg-gradient-to-r from-white to-neutral-500 bg-clip-text text-transparent">
-            perfect trip.
-          </span>
-        </h1>
+            <h1 className="text-5xl font-bold tracking-tight">
+              Plan trips with your friends.
+            </h1>
 
-        <p className="mt-6 max-w-2xl text-center text-lg text-neutral-400">
-          Get destination ideas, activities and travel recommendations in
-          seconds.
-        </p>
-
-        <div className="mt-12 w-full max-w-3xl rounded-3xl border border-white/10 bg-white/5 p-4">
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="We are 4 friends from Frankfurt looking for beach, nightlife and cheap flights in July..."
-            className="min-h-[140px] w-full resize-none bg-transparent p-4 text-lg outline-none placeholder:text-neutral-500"
-          />
-
-          <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
-            <p className="text-sm text-neutral-500">
-              Powered by AI recommendations
+            <p className="mt-4 max-w-2xl text-lg text-neutral-400">
+              Collect preferences, compare dates and let AI help your group find
+              the perfect destination.
             </p>
-
-            <button
-              onClick={generateTrip}
-              disabled={loading}
-              className="flex items-center gap-2 rounded-2xl bg-white px-5 py-3 font-medium text-black transition hover:scale-[1.02] disabled:opacity-50"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4" />
-                  Generate Trip
-                </>
-              )}
-            </button>
           </div>
+
+          <button className="flex items-center gap-2 rounded-2xl bg-white px-6 py-4 font-medium text-black transition hover:scale-[1.03]">
+            <Plus className="h-5 w-5" />
+            New Trip
+          </button>
         </div>
 
-        {results.length > 0 && (
-          <div className="mt-16 grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {results.map((destination, index) => (
-              <div
-                key={index}
-                className="rounded-3xl border border-white/10 bg-white/5 p-6"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h2 className="text-2xl font-semibold">
-                      {destination.name}
-                    </h2>
+        <div className="mt-14 grid grid-cols-1 gap-8 xl:grid-cols-3">
+          {trips.map((trip) => (
+            <Link
+              key={trip.id}
+              href={`/trip/${trip.id}`}
+              className="group overflow-hidden rounded-[32px] border border-white/10 bg-white/5 transition hover:border-white/20 hover:bg-white/[0.07]"
+            >
+              <div className="relative h-56 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+                  alt={trip.name}
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                />
 
-                    <p className="mt-1 text-sm text-neutral-400">
-                      Match Score: {destination.match_score}%
-                    </p>
-                  </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
-                  <div className="rounded-full bg-white/10 px-3 py-1 text-sm">
-                    €{destination.estimated_budget}
-                  </div>
+                <div className="absolute left-6 top-6">
+                  <span className="rounded-full bg-black/40 px-3 py-1 text-sm backdrop-blur">
+                    {trip.status}
+                  </span>
                 </div>
 
-                <p className="mt-5 text-neutral-300">
-                  {destination.summary}
-                </p>
+                <div className="absolute bottom-6 left-6">
+                  <h2 className="text-3xl font-bold">
+                    {trip.name}
+                  </h2>
 
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {destination.vibes?.map((vibe, vibeIndex) => (
-                    <span
-                      key={vibeIndex}
-                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-neutral-300"
-                    >
-                      {vibe}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="mt-6 border-t border-white/10 pt-5">
-                  <p className="text-sm text-neutral-400">
-                    Best for: {destination.best_for}
+                  <p className="mt-2 max-w-sm text-sm text-neutral-300">
+                    {trip.description}
                   </p>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+
+              <div className="flex items-center justify-between p-6">
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2 text-neutral-400">
+                    <Users className="h-4 w-4" />
+                    {trip.members}
+                  </div>
+
+                  <div className="flex items-center gap-2 text-neutral-400">
+                    <Clock3 className="h-4 w-4" />
+                    Active
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm text-neutral-300 transition group-hover:translate-x-1">
+                  Open
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
-    </main>
+    </DashboardShell>
   );
 }
