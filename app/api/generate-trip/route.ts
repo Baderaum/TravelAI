@@ -6,15 +6,64 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
+    const {
+      groupSize,
+      departure,
+      temperature,
+      budget,
+      distance,
+      tripType,
+      vibes,
+      extraInfo,
+      budgetAmount,
+    pace,
+    accommodation,
+    travelPersonality,
+    avoidTourist,
+    hates,
+    currency,
+    } = body;
+
+    const prompt = `
+Group Size: ${groupSize}
+Departure Country: ${departure}
+Preferred Temperature: ${temperature}
+Budget: ${budget}
+Distance Preference: ${distance}
+Trip Type: ${tripType}
+Budget Per Person: ${currency}${budgetAmount}
+Travel Personality: ${travelPersonality}
+Travel Pace: ${pace}
+Accommodation Style: ${accommodation}
+Avoid Tourist Traps: ${avoidTourist ? "Yes" : "No"}
+
+Things To Avoid:
+${hates.join(", ")}
+
+Desired Vibes:
+${vibes.join(", ")}
+
+Additional Information:
+${extraInfo || "None"}
+`;
+
     const completion = await openai.chat.completions.create({
       model: "gpt-4.1-mini",
+
       messages: [
         {
           role: "system",
           content: `
-You are an AI travel recommendation engine.
+You are an elite AI travel recommendation engine.
 
-Return ONLY valid JSON.
+Your task:
+- Recommend destinations matching the user's preferences
+- Consider travel distance carefully
+- Match the group's vibe and budget
+- Avoid generic recommendations if possible
+- Return ONLY valid JSON
+
+JSON format:
 
 {
   "destinations": [
@@ -27,7 +76,6 @@ Return ONLY valid JSON.
       "vibes": ["beach", "party", "cheap"],
       "weather": "28°C",
       "flight_time": "2h 10m",
-      "image": (link for a photo that shows the place),
       "activities": [
         "Boat Tours",
         "Beach Clubs",
@@ -40,7 +88,7 @@ Return ONLY valid JSON.
         },
         {
           role: "user",
-          content: body.prompt,
+          content: prompt,
         },
       ],
     });
@@ -57,10 +105,14 @@ Return ONLY valid JSON.
       };
     }
 
+    if (!parsed.destinations) {
+      parsed.destinations = [];
+    }
+
     for (const destination of parsed.destinations) {
-        destination.image = await getDestinationImage(
-            `${destination.name} travel`
-        );
+      destination.image = await getDestinationImage(
+        `${destination.name} travel`
+      );
     }
 
     return NextResponse.json(parsed);

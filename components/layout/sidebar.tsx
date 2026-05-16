@@ -5,30 +5,30 @@ import {
   Compass,
   Map,
   Calendar,
+  Bookmark,
   Settings,
-  Sparkles,
 } from "lucide-react";
 
 const items = [
   {
-    label: "Explore",
-    href: "/dashboard",
+    label: "Discover",
+    href: "/discover",
     icon: Compass,
   },
   {
     label: "Trips",
-    href: "/dashboard/trips",
+    href: "/trips",
     icon: Map,
   },
   {
     label: "Calendar",
-    href: "/dashboard/calendar",
+    href: "/calendar",
     icon: Calendar,
   },
   {
-    label: "AI Planner",
-    href: "/dashboard/planner",
-    icon: Sparkles,
+    label: "Saved",
+    href: "/saved",
+    icon: Bookmark,
   },
 ];
 
@@ -41,7 +41,7 @@ export function Sidebar() {
         </h1>
 
         <p className="mt-1 text-sm text-neutral-500">
-          AI Group Travel Planning
+          Group Travel OS
         </p>
       </div>
 
