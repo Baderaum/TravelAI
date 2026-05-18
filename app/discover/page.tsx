@@ -208,7 +208,7 @@ export default function DiscoverPage() {
 
               <div>
                 <p className="mb-3 text-sm text-neutral-400">
-                  Departure
+                  Departure (also travel by car)
                 </p>
 
                 <select

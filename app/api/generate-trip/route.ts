@@ -63,6 +63,10 @@ Your task:
 - Avoid generic recommendations if possible
 - Return ONLY valid JSON
 
+VERY IMPORTANT: If the Budget is too low to fly (less then 300€), then you have to recommend only destinations inside the same country or a bordering country (but not too far inside)
+
+The last destination has to be very special, not what a normal person would think about.
+
 JSON format:
 
 {
