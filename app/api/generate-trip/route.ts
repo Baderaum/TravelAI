@@ -10,7 +10,6 @@ export async function POST(req: Request) {
       groupSize,
       departure,
       temperature,
-      budget,
       distance,
       tripType,
       vibes,
@@ -28,7 +27,6 @@ export async function POST(req: Request) {
 Group Size: ${groupSize}
 Departure Country: ${departure}
 Preferred Temperature: ${temperature}
-Budget: ${budget}
 Distance Preference: ${distance}
 Trip Type: ${tripType}
 Budget Per Person: ${currency}${budgetAmount}

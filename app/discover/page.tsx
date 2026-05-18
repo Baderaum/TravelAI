@@ -2,7 +2,7 @@
 
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { Loader2, Sparkles, Users, Plane } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState,} from "react";
 
 const vibeOptions = [
   "Beach",
@@ -45,7 +45,6 @@ export default function DiscoverPage() {
   const [groupSize, setGroupSize] = useState("3-5");
   const [departure, setDeparture] = useState("Germany");
   const [temperature, setTemperature] = useState("Warm");
-  const [budget, setBudget] = useState("Medium");
   const [flightTime, setFlightTime] =
     useState("Same continent");
   const [tripType, setTripType] = useState("Friends");
@@ -129,7 +128,6 @@ export default function DiscoverPage() {
           groupSize,
           departure,
           temperature,
-          budget,
           distance: flightTime,
           tripType,
           vibes: selectedVibes,
@@ -260,26 +258,6 @@ export default function DiscoverPage() {
                   <option>
                     Doesn't matter
                   </option>
-                </select>
-              </div>
-
-              <div>
-                <p className="mb-3 text-sm text-neutral-400">
-                  Budget
-                </p>
-
-                <select
-                  value={budget}
-                  onChange={(e) =>
-                    setBudget(
-                      e.target.value
-                    )
-                  }
-                  className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-                >
-                  <option>Cheap</option>
-                  <option>Medium</option>
-                  <option>Luxury</option>
                 </select>
               </div>
 
