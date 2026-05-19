@@ -67,7 +67,12 @@ VERY IMPORTANT: If the Budget is too low to fly (less then 300€), then you hav
 
 The last destination has to be very special, not what a normal person would think about.
 
-The maximum amount of destinations is 6, but if it is 3 or 4 also okay. It depends on how good the options are.
+The maximum amount of destinations is 3, // IGNORE THIS PART: "but if it is 3 or 4 also okay. It depends on how good the options are."
+
+The activities should be at least 3 in amount. Look for things to do only at that locations and also "going to beach" and basic stuff
+
+The flight_time has to be the flight time from the destination and ONLY if there is a necessary ferry or bus ride to take, then say it inside flightime too (like "3,5h + 1,5h ferry")
+
 
 JSON format:
 
