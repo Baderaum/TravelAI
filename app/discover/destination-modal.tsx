@@ -5,6 +5,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  Marker,
+} from "react-simple-maps";
+
 import { Destination } from "./page";
 
 type Props = {
@@ -59,6 +66,9 @@ export function DestinationModal({
                 <h2 className="text-5xl font-bold">
                   {destination.name}
                 </h2>
+                <p className="mt-3 text-lg text-neutral-300">
+                    {destination.subtitle}
+                </p>
 
                 <p className="mt-2 text-lg text-neutral-300">
                   Match Score{" "}
@@ -142,6 +152,67 @@ export function DestinationModal({
                   <p
                     className={`${typography.statLabel} text-neutral-400`}
                   >
+                    <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-3">
+
+                <div className="h-[220px] overflow-hidden rounded-2xl bg-[#d9f3ff]">
+
+                    <ComposableMap
+                    projectionConfig={{
+                        scale: 750,
+                        center: [
+                            destination.coordinates.lng,
+                            destination.coordinates.lat,
+                        ],
+                    }}
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                    }}
+                    >
+                    <Geographies geography="https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json">
+                        {({ geographies }) =>
+                        geographies.map((geo: any) => (
+                            <Geography
+                            key={geo.rsmKey}
+                            geography={geo}
+                            fill="#1f2937"
+                            stroke="#111827"
+                            strokeWidth={0.4}
+                            
+                            style={{
+                                default: {
+                                outline: "none",
+                                },
+                                hover: {
+                                fill: "#374151",
+                                outline: "none",
+                                },
+                                pressed: {
+                                fill: "#4b5563",
+                                outline: "none",
+                                },
+                            }}
+                            />
+                        ))
+                        }
+                    </Geographies>
+
+                    <Marker
+                    coordinates={[
+                        destination.coordinates.lng,
+                        destination.coordinates.lat,
+                    ]}
+                    >
+                        <circle
+                        r={6}
+                        fill="#ff0000"
+                        stroke="#fff"
+                        strokeWidth={2}
+                        />
+                    </Marker>
+                    </ComposableMap>
+                </div>
+                </div>
                     Weather
                   </p>
 

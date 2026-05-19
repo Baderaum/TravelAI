@@ -80,6 +80,11 @@ JSON format:
       "vibes": ["beach", "party", "cheap"],
       "weather": "28°C",
       "flight_time": "2h 10m",
+      "subtitle": "Mediterranean hidden gem • Europe",
+      "coordinates": {
+        "lat": 35.881,
+        "lng": 14.532
+      },
       "activities": [
         "Boat Tours",
         "Beach Clubs",

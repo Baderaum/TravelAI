@@ -18,6 +18,11 @@ export type Destination = {
   flight_time: string;
   image: string;
   activities: string[];
+  subtitle: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
 };
 
 export default function DiscoverPage() {
