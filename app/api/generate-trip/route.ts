@@ -15,16 +15,18 @@ export async function POST(req: Request) {
       vibes,
       extraInfo,
       budgetAmount,
-    pace,
-    accommodation,
-    travelPersonality,
-    avoidTourist,
-    hates,
-    currency,
+      pace,
+      accommodation,
+      travelPersonality,
+      avoidTourist,
+      hates,
+      currency,
+      ageGroup,
     } = body;
 
     const prompt = `
 Group Size: ${groupSize}
+Age (younger people are more active): ${ageGroup}
 Departure Country: ${departure}
 Preferred Temperature: ${temperature}
 Distance Preference: ${distance}

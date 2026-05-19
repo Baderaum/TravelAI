@@ -74,6 +74,9 @@ export default function DiscoverPage() {
 
   const [hates, setHates] = useState<string[]>([]);
 
+  const [ageGroup, setAgeGroup] =
+    useState("26-35");
+
   const [results, setResults] = useState<
     Destination[]
   >([]);
@@ -139,6 +142,7 @@ export default function DiscoverPage() {
           avoidTourist,
           hates,
           currency,
+          ageGroup,
         }),
       });
 
@@ -223,6 +227,24 @@ export default function DiscoverPage() {
                   <option>France</option>
                   <option>USA</option>
                   <option>Netherlands</option>
+                </select>
+              </div>
+              <div>
+                <p className="mb-3 text-sm text-neutral-400">
+                  Age Group
+                </p>
+
+                <select
+                  value={ageGroup}
+                  onChange={(e) =>
+                    setAgeGroup(e.target.value)
+                  }
+                  className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
+                >
+                  <option>18-25</option>
+                  <option>26-35</option>
+                  <option>36-50</option>
+                  <option>50+</option>
                 </select>
               </div>
             </div>
