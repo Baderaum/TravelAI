@@ -330,7 +330,7 @@ export function FilterBar({
           </h2>
 
           <p className="mt-2 text-neutral-400">
-            Approximate budget per person
+            Approximate budget per person (the budget will mostly affect the recommended activities)
           </p>
 
           <div className="mt-6 flex items-center gap-4">

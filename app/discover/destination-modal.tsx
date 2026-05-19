@@ -18,7 +18,7 @@ const typography = {
   body: "text-lg",
   tag: "text-base",
   statLabel: "text-base",
-  statValue: "text-3xl",
+  statValue: "mt-3 text-3xl",
   button: "text-lg",
 };
 
@@ -45,6 +45,7 @@ export function DestinationModal({
         {destination && (
           <div className="overflow-hidden rounded-[28px]">
 
+            {/* HERO */}
             <div className="relative h-[320px] w-full">
               <img
                 src={destination.image}
@@ -68,22 +69,32 @@ export function DestinationModal({
               </div>
             </div>
 
+            {/* CONTENT */}
             <div className="grid gap-8 p-5 sm:p-8 lg:grid-cols-[1.3fr_0.7fr]">
 
+              {/* LEFT */}
               <div>
 
+                {/* ABOUT */}
                 <div>
-                  <h3 className="text-2xl font-semibold">
+                  <h3
+                    className={`${typography.sectionTitle} font-semibold`}
+                  >
                     About
                   </h3>
 
-                  <p className="mt-4 text-lg leading-8 text-neutral-300">
+                  <p
+                    className={`mt-4 leading-8 text-neutral-300 ${typography.body}`}
+                  >
                     {destination.summary}
                   </p>
                 </div>
 
+                {/* ACTIVITIES */}
                 <div className="mt-8">
-                  <h3 className="text-2xl font-semibold">
+                  <h3
+                    className={`${typography.sectionTitle} font-semibold`}
+                  >
                     Activities
                   </h3>
 
@@ -92,7 +103,7 @@ export function DestinationModal({
                       (activity) => (
                         <div
                           key={activity}
-                          className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm transition hover:bg-white/10"
+                          className={`rounded-2xl border border-white/10 bg-white/5 px-5 py-3 transition hover:bg-white/10 ${typography.tag}`}
                         >
                           {activity}
                         </div>
@@ -101,8 +112,11 @@ export function DestinationModal({
                   </div>
                 </div>
 
+                {/* VIBES */}
                 <div className="mt-8">
-                  <h3 className="text-2xl font-semibold">
+                  <h3
+                    className={`${typography.sectionTitle} font-semibold`}
+                  >
                     Vibes
                   </h3>
 
@@ -111,7 +125,7 @@ export function DestinationModal({
                       (vibe) => (
                         <div
                           key={vibe}
-                          className="rounded-full bg-white/10 px-4 py-2 text-sm"
+                          className={`rounded-full bg-white/10 px-5 py-3 ${typography.tag}`}
                         >
                           {vibe}
                         </div>
@@ -121,39 +135,54 @@ export function DestinationModal({
                 </div>
               </div>
 
+              {/* RIGHT */}
               <div className="space-y-4">
 
                 <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-sm text-neutral-400">
+                  <p
+                    className={`${typography.statLabel} text-neutral-400`}
+                  >
                     Weather
                   </p>
 
-                  <p className="mt-2 text-xl font-semibold">
+                  <p
+                    className={`${typography.statValue} font-semibold`}
+                  >
                     {destination.weather}
                   </p>
                 </div>
 
                 <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-sm text-neutral-400">
+                  <p
+                    className={`${typography.statLabel} text-neutral-400`}
+                  >
                     Flight Time
                   </p>
 
-                  <p className="mt-2 text-xl font-semibold">
+                  <p
+                    className={`${typography.statValue} font-semibold`}
+                  >
                     {destination.flight_time}
                   </p>
                 </div>
 
                 <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-sm text-neutral-400">
+                  <p
+                    className={`${typography.statLabel} text-neutral-400`}
+                  >
                     Estimated Budget
                   </p>
 
-                  <p className="mt-2 text-xl font-semibold">
+                  <p
+                    className={`${typography.statValue} font-semibold`}
+                  >
                     €{destination.estimated_budget}
                   </p>
                 </div>
 
-                <button className="mt-4 w-full rounded-2xl bg-white py-4 font-semibold text-black transition hover:bg-neutral-200">
+                <button
+                  className={`mt-4 w-full rounded-2xl bg-white py-5 font-semibold text-black transition hover:bg-neutral-200 ${typography.button}`}
+                >
                   Create Trip
                 </button>
               </div>
