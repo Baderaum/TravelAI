@@ -39,7 +39,7 @@ export function DestinationModal({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className="w-full !max-w-6xl overflow-hidden border border-white/10 bg-black p-0 text-white">
+      <DialogContent className="max-h-[90vh] w-full !max-w-6xl overflow-y-auto rounded-[32px] border border-white/10 bg-black p-0 text-white scrollbar-thin scrollbar-thumb-white/20 shadow-[0_0_120px_rgba(59,130,246,0.15)]">
 
         <DialogTitle className="sr-only">
           Destination Details
@@ -99,7 +99,6 @@ export function DestinationModal({
                     {destination.summary}
                   </p>
                 </div>
-
                 {/* ACTIVITIES */}
                 <div className="mt-8">
                   <h3
@@ -108,14 +107,54 @@ export function DestinationModal({
                     Activities
                   </h3>
 
-                  <div className="mt-4 flex flex-wrap gap-3">
+                  <div className="mt-5 space-y-4">
                     {destination.activities.map(
                       (activity) => (
                         <div
-                          key={activity}
-                          className={`rounded-2xl border border-white/10 bg-white/5 px-5 py-3 transition hover:bg-white/10 ${typography.tag}`}
+                          key={activity.title}
+                          className="flex gap-4 rounded-3xl border border-white/10 bg-white/5 p-3 transition hover:bg-white/10"
                         >
-                          {activity}
+                          <img
+                            src={activity.image}
+                            alt={activity.title}
+                            className="h-24 w-32 rounded-2xl object-cover"
+                          />
+
+                          <div className="flex-1">
+                            <h4 className="text-lg font-semibold">
+                              {activity.title}
+                            </h4>
+
+                            <p className="mt-2 text-neutral-400">
+                              {activity.description}
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* WHY THIS MATCHES YOU */}
+                <div className="mt-8">
+                  <h3
+                    className={`${typography.sectionTitle} font-semibold`}
+                  >
+                    Why This Matches You
+                  </h3>
+
+                  <div className="mt-5 space-y-3">
+                    {destination.why_match.map(
+                      (reason) => (
+                        <div
+                          key={reason}
+                          className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4"
+                        >
+                          <div className="mt-1 h-2.5 w-2.5 rounded-full bg-green-400" />
+
+                          <p className="text-neutral-300">
+                            {reason}
+                          </p>
                         </div>
                       )
                     )}

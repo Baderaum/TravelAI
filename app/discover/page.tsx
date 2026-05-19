@@ -17,7 +17,12 @@ export type Destination = {
   weather: string;
   flight_time: string;
   image: string;
-  activities: string[];
+  why_match: string[];
+  activities: {
+    title: string;
+    description: string;
+    image: string;
+  }[];
   subtitle: string;
   coordinates: {
     lat: number;

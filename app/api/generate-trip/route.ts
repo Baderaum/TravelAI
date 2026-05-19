@@ -67,6 +67,8 @@ VERY IMPORTANT: If the Budget is too low to fly (less then 300€), then you hav
 
 The last destination has to be very special, not what a normal person would think about.
 
+The maximum amount of destinations is 6, but if it is 3 or 4 also okay. It depends on how good the options are.
+
 JSON format:
 
 {
@@ -80,15 +82,23 @@ JSON format:
       "vibes": ["beach", "party", "cheap"],
       "weather": "28°C",
       "flight_time": "2h 10m",
+      "why_match": [
+        "Short direct flights from Germany",
+        "Fits your medium budget perfectly",
+        "Strong nightlife without overwhelming crowds",
+        "Great for spontaneous friend groups"
+      ],
       "subtitle": "Mediterranean hidden gem • Europe",
       "coordinates": {
         "lat": 35.881,
         "lng": 14.532
       },
       "activities": [
-        "Boat Tours",
-        "Beach Clubs",
-        "Nightlife"
+        {
+          "title": "Boat Tours",
+          "description": "Explore hidden beaches and crystal-clear waters.",
+          "image": ""
+        }
       ]
     }
   ]
@@ -119,9 +129,16 @@ JSON format:
     }
 
     for (const destination of parsed.destinations) {
+
       destination.image = await getDestinationImage(
         `${destination.name} travel`
       );
+
+      for (const activity of destination.activities || []) {
+        activity.image = await getDestinationImage(
+          `${activity.title} ${destination.name}`
+        );
+      }
     }
 
     return NextResponse.json(parsed);
