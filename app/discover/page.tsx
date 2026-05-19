@@ -3,6 +3,7 @@
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { Loader2, Sparkles, Users, Plane } from "lucide-react";
 import { useEffect, useRef, useState,} from "react";
+import { Dialog, DialogContent, DialogTitle, DialogDescription, } from "@/components/ui/dialog";
 
 const vibeOptions = [
   "Beach",
@@ -80,6 +81,9 @@ export default function DiscoverPage() {
   const [results, setResults] = useState<
     Destination[]
   >([]);
+
+  const [selectedDestination, setSelectedDestination] =
+    useState<Destination | null>(null);
 
   const resultsRef =
     useRef<HTMLDivElement | null>(null);
@@ -613,7 +617,10 @@ export default function DiscoverPage() {
                 (destination, index) => (
                   <div
                     key={index}
-                    className="overflow-hidden rounded-[32px] border border-white/10 bg-white/5"
+                    onClick={() =>
+                      setSelectedDestination(destination)
+                    }
+                    className="cursor-pointer overflow-hidden rounded-[32px] border border-white/10 bg-white/5 transition hover:scale-[1.01] hover:border-white/20"
                   >
                     <div className="relative h-64">
                       <img
@@ -677,10 +684,179 @@ export default function DiscoverPage() {
                   </div>
                 )
               )}
+              
             </div>
           </div>
         )}
       </div>
+      <Dialog
+        open={!!selectedDestination}
+        onOpenChange={() =>
+          setSelectedDestination(null)
+        }
+      >
+        <DialogContent className="w-full !max-w-6xl overflow-hidden border border-white/10 bg-black p-0 text-white">
+          
+          <DialogTitle className="sr-only">
+            Destination Details
+          </DialogTitle>
+
+          <DialogDescription className="sr-only">
+            View detailed travel information about this destination.
+          </DialogDescription>
+
+          {selectedDestination && (
+            <div className="overflow-hidden rounded-[28px]">
+
+              {/* HERO IMAGE */}
+              <div className="relative h-[320px] w-full">
+                <img
+                  src={selectedDestination.image}
+                  alt={selectedDestination.name}
+                  className="h-full w-full object-cover"
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+
+                <div className="absolute bottom-0 left-0 p-8">
+                  <h2 className="text-5xl font-bold">
+                    {selectedDestination.name}
+                  </h2>
+
+                  <p className="mt-2 text-lg text-neutral-300">
+                    Match Score{" "}
+                    <span className="text-green-400">
+                      {selectedDestination.match_score}%
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              {/* CONTENT */}
+              <div className="grid gap-8 p-5 sm:p-8 lg:grid-cols-[1.3fr_0.7fr]">
+
+                {/* LEFT SIDE */}
+                <div>
+
+                  {/* ABOUT */}
+                  <div>
+                    <h3 className="text-2xl font-semibold">
+                      About
+                    </h3>
+
+                    <p className="mt-4 text-neutral-300">
+                      {selectedDestination.summary}
+                    </p>
+                  </div>
+
+                  {/* STATS */}
+                  <div className="mt-8 grid grid-cols-2 gap-4">
+                    
+                    <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                      <p className="text-sm text-neutral-400">
+                        Best For
+                      </p>
+
+                      <p className="mt-2 text-lg font-semibold">
+                        {selectedDestination.best_for}
+                      </p>
+                    </div>
+
+                    <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                      <p className="text-sm text-neutral-400">
+                        Match Score
+                      </p>
+
+                      <p className="mt-2 text-lg font-semibold text-green-400">
+                        {selectedDestination.match_score}%
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* ACTIVITIES */}
+                  <div className="mt-8">
+                    <h3 className="text-2xl font-semibold">
+                      Activities
+                    </h3>
+
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      {selectedDestination.activities.map(
+                        (activity) => (
+                          <div
+                            key={activity}
+                            className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm transition hover:bg-white/10"
+                          >
+                            {activity}
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  {/* VIBES */}
+                  <div className="mt-8">
+                    <h3 className="text-2xl font-semibold">
+                      Vibes
+                    </h3>
+
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      {selectedDestination.vibes.map(
+                        (vibe) => (
+                          <div
+                            key={vibe}
+                            className="rounded-full bg-white/10 px-4 py-2 text-sm"
+                          >
+                            {vibe}
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* RIGHT SIDE */}
+                <div className="space-y-4">
+
+                  <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                    <p className="text-sm text-neutral-400">
+                      Weather
+                    </p>
+
+                    <p className="mt-2 text-xl font-semibold">
+                      {selectedDestination.weather}
+                    </p>
+                  </div>
+
+                  <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                    <p className="text-sm text-neutral-400">
+                      Flight Time
+                    </p>
+
+                    <p className="mt-2 text-xl font-semibold">
+                      {selectedDestination.flight_time}
+                    </p>
+                  </div>
+
+                  <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                    <p className="text-sm text-neutral-400">
+                      Estimated Budget
+                    </p>
+
+                    <p className="mt-2 text-xl font-semibold">
+                      €
+                      {selectedDestination.estimated_budget}
+                    </p>
+                  </div>
+
+                  <button className="mt-4 w-full rounded-2xl bg-white py-4 font-semibold text-black transition hover:bg-neutral-200">
+                    Create Trip
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </DashboardShell>
   );
 }
