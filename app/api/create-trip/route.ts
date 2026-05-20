@@ -92,6 +92,38 @@ export async function POST(request: Request) {
         data: destination,
       });
 
+    // SAVE ACTIVITIES
+    if (destination.activities?.length) {
+
+    const formattedActivities =
+        destination.activities.map(
+        (activity: any) => ({
+            trip_id: trips.id,
+
+            title:
+            activity.title,
+
+            description:
+            activity.description,
+
+            image:
+            activity.image,
+
+            status: "suggested",
+        })
+        );
+
+    const {
+        error: activityError,
+    } = await supabase
+        .from("activities")
+        .insert(formattedActivities);
+
+    if (activityError) {
+        console.error(activityError);
+    }
+    }
+
     return NextResponse.json({
       tripId: trips.id,
     });

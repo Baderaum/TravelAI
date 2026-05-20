@@ -24,6 +24,16 @@ export default async function TripPage({
       .eq("id", id)
       .single();
 
+  const {
+    data: activities,
+  } = await supabase
+    .from("activities")
+    .select("*")
+    .eq("trip_id", id)
+    .order("created_at", {
+      ascending: true,
+    });
+
   if (!trip) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-black text-white">
@@ -80,6 +90,79 @@ export default async function TripPage({
               <h2 className="text-3xl font-semibold">
                 Overview
               </h2>
+              <div className="rounded-[32px] border border-white/10 bg-white/5 p-8">
+
+  <div className="flex items-center justify-between">
+
+    <h2 className="text-3xl font-semibold">
+      Activities
+    </h2>
+
+    <button className="rounded-2xl bg-white px-5 py-3 font-medium text-black transition hover:bg-neutral-200">
+      Add Activity
+    </button>
+    </div>
+
+    {!activities?.length && (
+      <div className="mt-8 rounded-2xl border border-dashed border-white/10 p-10 text-center text-neutral-400">
+        No activities planned yet.
+      </div>
+    )}
+
+    <div className="mt-8 space-y-4">
+
+      {activities?.map((activity) => (
+        <div
+          key={activity.id}
+          className="overflow-hidden rounded-3xl border border-white/10 bg-black/40"
+        >
+
+          <div className="flex">
+
+            {/* IMAGE */}
+            {activity.image && (
+              <img
+                src={activity.image}
+                alt={activity.title}
+                className="h-44 w-56 object-cover"
+              />
+            )}
+
+            {/* CONTENT */}
+            <div className="flex-1 p-5">
+
+              <div className="flex items-start justify-between">
+
+                <div>
+
+                  <h3 className="text-2xl font-semibold">
+                    {activity.title}
+                  </h3>
+
+                  <p className="mt-3 text-neutral-400">
+                    {activity.description}
+                  </p>
+                </div>
+
+                <div className="rounded-full bg-white/10 px-4 py-2 text-sm capitalize">
+                  {activity.status}
+                </div>
+
+              </div>
+
+              {activity.location && (
+                <p className="mt-5 text-sm text-neutral-500">
+                  📍 {activity.location}
+                </p>
+              )}
+
+            </div>
+          </div>
+        </div>
+      ))}
+
+    </div>
+  </div>
 
               <p className="mt-5 text-lg leading-8 text-neutral-300">
                 Your collaborative trip workspace is now ready.
