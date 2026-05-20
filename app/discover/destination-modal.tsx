@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Dialog,
   DialogContent,
@@ -13,6 +15,8 @@ import {
 } from "react-simple-maps";
 
 import { Destination } from "./page";
+
+import { useRouter } from "next/navigation";
 
 type Props = {
   destination: Destination | null;
@@ -34,6 +38,43 @@ export function DestinationModal({
   open,
   onOpenChange,
 }: Props) {
+
+  const router = useRouter();
+
+  async function createTrip(
+    destination: any
+  ) {
+    try {
+
+      const response =
+        await fetch(
+          "/api/create-trip",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              destination,
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      router.push(
+        `/trip/${data.tripId}`
+      );
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <Dialog
       open={open}
@@ -66,8 +107,9 @@ export function DestinationModal({
                 <h2 className="text-5xl font-bold">
                   {destination.name}
                 </h2>
+
                 <p className="mt-3 text-lg text-neutral-300">
-                    {destination.subtitle}
+                  {destination.subtitle}
                 </p>
 
                 <p className="mt-2 text-lg text-neutral-300">
@@ -99,6 +141,7 @@ export function DestinationModal({
                     {destination.summary}
                   </p>
                 </div>
+
                 {/* ACTIVITIES */}
                 <div className="mt-8">
                   <h3
@@ -152,7 +195,9 @@ export function DestinationModal({
                         >
                           <div className="mt-1 h-2.5 w-2.5 rounded-full bg-green-400" />
 
-                          <p className="text-neutral-300">
+                          <p
+                            className={`${typography.body} text-neutral-300`}
+                          >
                             {reason}
                           </p>
                         </div>
@@ -187,71 +232,74 @@ export function DestinationModal({
               {/* RIGHT */}
               <div className="space-y-4">
 
+                {/* MAP */}
+                <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-3">
+
+                  <div className="h-[220px] overflow-hidden rounded-2xl bg-[#d9f3ff]">
+
+                    <ComposableMap
+                      projectionConfig={{
+                        scale: 750,
+                        center: [
+                          destination.coordinates.lng,
+                          destination.coordinates.lat,
+                        ],
+                      }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                      }}
+                    >
+                      <Geographies geography="https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json">
+                        {({ geographies }) =>
+                          geographies.map((geo: any) => (
+                            <Geography
+                              key={geo.rsmKey}
+                              geography={geo}
+                              fill="#1f2937"
+                              stroke="#111827"
+                              strokeWidth={0.4}
+
+                              style={{
+                                default: {
+                                  outline: "none",
+                                },
+                                hover: {
+                                  fill: "#374151",
+                                  outline: "none",
+                                },
+                                pressed: {
+                                  fill: "#4b5563",
+                                  outline: "none",
+                                },
+                              }}
+                            />
+                          ))
+                        }
+                      </Geographies>
+
+                      <Marker
+                        coordinates={[
+                          destination.coordinates.lng,
+                          destination.coordinates.lat,
+                        ]}
+                      >
+                        <circle
+                          r={6}
+                          fill="#ff0000"
+                          stroke="#fff"
+                          strokeWidth={2}
+                        />
+                      </Marker>
+                    </ComposableMap>
+                  </div>
+                </div>
+
+                {/* WEATHER */}
                 <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
                   <p
                     className={`${typography.statLabel} text-neutral-400`}
                   >
-                    <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-3">
-
-                <div className="h-[220px] overflow-hidden rounded-2xl bg-[#d9f3ff]">
-
-                    <ComposableMap
-                    projectionConfig={{
-                        scale: 750,
-                        center: [
-                            destination.coordinates.lng,
-                            destination.coordinates.lat,
-                        ],
-                    }}
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                    }}
-                    >
-                    <Geographies geography="https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json">
-                        {({ geographies }) =>
-                        geographies.map((geo: any) => (
-                            <Geography
-                            key={geo.rsmKey}
-                            geography={geo}
-                            fill="#1f2937"
-                            stroke="#111827"
-                            strokeWidth={0.4}
-                            
-                            style={{
-                                default: {
-                                outline: "none",
-                                },
-                                hover: {
-                                fill: "#374151",
-                                outline: "none",
-                                },
-                                pressed: {
-                                fill: "#4b5563",
-                                outline: "none",
-                                },
-                            }}
-                            />
-                        ))
-                        }
-                    </Geographies>
-
-                    <Marker
-                    coordinates={[
-                        destination.coordinates.lng,
-                        destination.coordinates.lat,
-                    ]}
-                    >
-                        <circle
-                        r={6}
-                        fill="#ff0000"
-                        stroke="#fff"
-                        strokeWidth={2}
-                        />
-                    </Marker>
-                    </ComposableMap>
-                </div>
-                </div>
                     Weather
                   </p>
 
@@ -262,6 +310,7 @@ export function DestinationModal({
                   </p>
                 </div>
 
+                {/* FLIGHT */}
                 <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
                   <p
                     className={`${typography.statLabel} text-neutral-400`}
@@ -276,6 +325,7 @@ export function DestinationModal({
                   </p>
                 </div>
 
+                {/* BUDGET */}
                 <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
                   <p
                     className={`${typography.statLabel} text-neutral-400`}
@@ -290,7 +340,11 @@ export function DestinationModal({
                   </p>
                 </div>
 
+                {/* BUTTON */}
                 <button
+                  onClick={() =>
+                    createTrip(destination)
+                  }
                   className={`mt-4 w-full rounded-2xl bg-white py-5 font-semibold text-black transition hover:bg-neutral-200 ${typography.button}`}
                 >
                   Create Trip
