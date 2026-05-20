@@ -2,6 +2,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import GenerateActivitiesButton from "@/components/trip/generate-activities-button";
 
 export default async function TripPage({
   params,
@@ -98,9 +99,17 @@ export default async function TripPage({
       Activities
     </h2>
 
+  <div className="flex items-center gap-3">
+
     <button className="rounded-2xl bg-white px-5 py-3 font-medium text-black transition hover:bg-neutral-200">
       Add Activity
     </button>
+
+    <GenerateActivitiesButton
+      tripId={id}
+    />
+
+  </div>
     </div>
 
     {!activities?.length && (
