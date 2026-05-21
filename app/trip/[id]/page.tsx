@@ -6,6 +6,8 @@ import { ArrowLeft } from "lucide-react";
 
 import TripActivities from "@/components/trip/trip-activities";
 
+import InviteMember from "@/components/trip/invite-member";
+
 export default async function TripPage({
   params,
 }: {
@@ -149,7 +151,7 @@ export default async function TripPage({
             </div>
           </div>
 
-          {/* RIGHT */}
+          {/* RIGHT COLUMN */}
           <div className="space-y-6">
 
             <div className="rounded-[32px] border border-white/10 bg-white/5 p-6">
@@ -173,6 +175,10 @@ export default async function TripPage({
               <p className="mt-3 break-all text-sm text-neutral-300">
                 {trip.id}
               </p>
+
+              <InviteMember
+                tripId={id}
+              />
 
             </div>
 

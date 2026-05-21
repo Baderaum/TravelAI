@@ -17,22 +17,44 @@ export default async function TripsPage() {
     await createClient();
 
   const {
-    data: trips,
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const {
+    data: memberships,
   } = await supabase
-    .from("trips")
-    .select("*")
-    .order("created_at", {
-      ascending: false,
-    });
+    .from("trip_members")
+    .select(`
+      role,
+      trips (
+        id,
+        title,
+        destination,
+        cover_image,
+        status
+      )
+    `)
+    .eq("user_id", user.id);
+
+  const trips =
+    memberships?.map(
+      (membership: any) =>
+        membership.trips
+    ) || [];
 
   return (
     <DashboardShell>
+
       <div className="p-10">
 
-        {/* HEADER */}
         <div className="flex items-center justify-between">
 
           <div>
+
             <h1 className="text-5xl font-bold text-white">
               Your Trips
             </h1>
@@ -40,102 +62,123 @@ export default async function TripsPage() {
             <p className="mt-4 text-lg text-neutral-400">
               Collaborative workspaces for group travel planning.
             </p>
+
           </div>
 
           <Link
             href="/discover"
             className="flex items-center gap-2 rounded-2xl bg-white px-6 py-4 font-medium text-black transition hover:bg-neutral-200"
           >
+
             <Plus className="h-5 w-5" />
+
             New Trip
+
           </Link>
+
         </div>
 
-        {/* EMPTY STATE */}
-        {!trips?.length && (
-          <div className="mt-20 flex flex-col items-center justify-center rounded-[32px] border border-white/10 bg-white/5 p-16 text-center">
+        {trips.length === 0 ? (
+
+          <div className="mt-20 rounded-[32px] border border-white/10 bg-white/5 p-14 text-center">
 
             <h2 className="text-3xl font-bold text-white">
               No trips yet
             </h2>
 
-            <p className="mt-4 max-w-lg text-lg text-neutral-400">
-              Start discovering destinations and create
-              your first collaborative travel workspace.
+            <p className="mt-4 text-neutral-400">
+              Start your first collaborative trip.
             </p>
 
             <Link
               href="/discover"
-              className="mt-8 rounded-2xl bg-white px-6 py-4 font-semibold text-black transition hover:bg-neutral-200"
+              className="mt-8 inline-flex rounded-2xl bg-white px-6 py-4 font-medium text-black transition hover:bg-neutral-200"
             >
-              Explore Destinations
+              Discover Destinations
             </Link>
+
           </div>
-        )}
 
-        {/* TRIPS GRID */}
-        <div className="mt-14 grid grid-cols-1 gap-8 xl:grid-cols-3">
+        ) : (
 
-          {trips?.map((trip) => (
-            <Link
-              key={trip.id}
-              href={`/trip/${trip.id}`}
-              className="group overflow-hidden rounded-[32px] border border-white/10 bg-white/5 transition hover:border-white/20"
-            >
+          <div className="mt-14 grid grid-cols-1 gap-8 xl:grid-cols-2">
 
-              {/* IMAGE */}
-              <div className="relative h-60 w-full overflow-hidden">
+            {trips.map((trip: any) => (
 
-                <img
-                  src={trip.cover_image}
-                  alt={trip.title}
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                />
+              <Link
+                key={trip.id}
+                href={`/trip/${trip.id}`}
+                className="group overflow-hidden rounded-[32px] border border-white/10 bg-white/5 transition hover:border-white/20"
+              >
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                <div className="relative h-[230px] w-full overflow-hidden">
 
-                <div className="absolute bottom-0 left-0 p-6">
+                  <img
+                    src={trip.cover_image}
+                    alt={trip.title}
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
 
-                  <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-white backdrop-blur">
-                    {trip.status}
-                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
-                  <h2 className="mt-4 text-3xl font-bold text-white">
-                    {trip.title}
-                  </h2>
+                  <div className="absolute left-0 top-0 p-6">
 
-                  <p className="mt-2 text-neutral-300">
-                    {trip.destination}
-                  </p>
+                    <span className="rounded-full bg-white/20 px-3 py-1 text-sm text-white backdrop-blur-md">
+                      {trip.status}
+                    </span>
+
+                  </div>
+
+                  <div className="absolute bottom-0 left-0 p-6">
+
+                    <h2 className="text-5xl font-bold text-white">
+                      {trip.title}
+                    </h2>
+
+                    <p className="mt-2 text-lg text-neutral-300">
+                      {trip.destination}
+                    </p>
+
+                  </div>
+
                 </div>
-              </div>
 
-              {/* CONTENT */}
-              <div className="p-6">
-
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-6">
 
                   <div className="flex items-center gap-6 text-neutral-400">
 
                     <div className="flex items-center gap-2">
+
                       <Users className="h-4 w-4" />
+
                       Group Trip
+
                     </div>
 
                     <div className="flex items-center gap-2">
+
                       <Clock3 className="h-4 w-4" />
+
                       Active
+
                     </div>
+
                   </div>
 
                   <ArrowRight className="h-5 w-5 text-white transition group-hover:translate-x-1" />
-                </div>
-              </div>
-            </Link>
-          ))}
 
-        </div>
+                </div>
+
+              </Link>
+
+            ))}
+
+          </div>
+
+        )}
+
       </div>
+
     </DashboardShell>
   );
 }
