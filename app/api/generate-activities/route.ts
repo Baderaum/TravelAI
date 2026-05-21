@@ -107,37 +107,8 @@ Return JSON only.
         );
     }
 
-    // SAVE TO DB
-    const formattedActivities =
-      activities.map(
-        (activity: any) => ({
-          trip_id: tripId,
-
-          title:
-            activity.title,
-
-          description:
-            activity.description,
-
-          image:
-            activity.image,
-
-          status: "ai_suggested",
-        })
-      );
-
-    const {
-      error,
-    } = await supabase
-      .from("activities")
-      .insert(formattedActivities);
-
-    if (error) {
-      console.error(error);
-    }
-
     return NextResponse.json({
-      success: true,
+      activities,
     });
 
   } catch (error) {

@@ -1,8 +1,10 @@
-// Das hier ist die Trip Page (Trip aus der DB)
 import { createClient } from "@/lib/supabase/server";
+
 import Link from "next/link";
+
 import { ArrowLeft } from "lucide-react";
-import GenerateActivitiesButton from "@/components/trip/generate-activities-button";
+
+import TripActivities from "@/components/trip/trip-activities";
 
 export default async function TripPage({
   params,
@@ -18,6 +20,7 @@ export default async function TripPage({
   const supabase =
     await createClient();
 
+  // LOAD TRIP
   const { data: trip } =
     await supabase
       .from("trips")
@@ -25,6 +28,7 @@ export default async function TripPage({
       .eq("id", id)
       .single();
 
+  // LOAD ACTIVITIES
   const {
     data: activities,
   } = await supabase
@@ -45,6 +49,8 @@ export default async function TripPage({
 
   return (
     <div className="min-h-screen bg-black text-white">
+
+      {/* BACK BUTTON */}
       <div className="absolute left-8 top-8 z-50">
 
         <Link
@@ -69,6 +75,7 @@ export default async function TripPage({
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
         <div className="absolute bottom-0 left-0 p-10">
+
           <h1 className="text-6xl font-bold">
             {trip.title}
           </h1>
@@ -76,6 +83,7 @@ export default async function TripPage({
           <p className="mt-4 text-xl text-neutral-300">
             {trip.destination}
           </p>
+
         </div>
       </div>
 
@@ -87,110 +95,30 @@ export default async function TripPage({
           {/* LEFT */}
           <div className="space-y-8">
 
+            {/* OVERVIEW */}
             <div className="rounded-[32px] border border-white/10 bg-white/5 p-8">
+
               <h2 className="text-3xl font-semibold">
                 Overview
               </h2>
-              <div className="rounded-[32px] border border-white/10 bg-white/5 p-8">
-
-  <div className="flex items-center justify-between">
-
-    <h2 className="text-3xl font-semibold">
-      Activities
-    </h2>
-
-  <div className="flex items-center gap-3">
-
-    <button className="rounded-2xl bg-white px-5 py-3 font-medium text-black transition hover:bg-neutral-200">
-      Add Activity
-    </button>
-
-    <GenerateActivitiesButton
-      tripId={id}
-    />
-
-  </div>
-    </div>
-
-    {!activities?.length && (
-      <div className="mt-8 rounded-2xl border border-dashed border-white/10 p-10 text-center text-neutral-400">
-        No activities planned yet.
-      </div>
-    )}
-
-    <div className="mt-8 space-y-4">
-
-      {activities?.map((activity) => (
-        <div
-          key={activity.id}
-          className={`overflow-hidden rounded-3xl border transition ${
-            activity.status === "ai_suggested"
-              ? "border-green-500/30 bg-green-500/5"
-              : "border-white/10 bg-black/40"
-          }`}
-        >
-
-          <div className="flex">
-
-            {/* IMAGE */}
-            {activity.image && (
-              <img
-                src={activity.image}
-                alt={activity.title}
-                className="h-44 w-56 object-cover"
-              />
-            )}
-
-            {/* CONTENT */}
-            <div className="flex-1 p-5">
-
-              <div className="flex items-start justify-between">
-
-                <div>
-
-                  {activity.status === "ai_suggested" && (
-                    <div className="mb-3 inline-flex rounded-full bg-green-500/20 px-3 py-1 text-xs font-medium text-green-300">
-                      New AI Suggestion
-                    </div>
-                  )}
-
-                  <h3 className="text-2xl font-semibold">
-                    {activity.title}
-                  </h3>
-
-                  <p className="mt-3 text-neutral-400">
-                    {activity.description}
-                  </p>
-                </div>
-
-                <button
-                  className="rounded-full bg-white/5 p-3 text-neutral-400 transition hover:bg-red-500/20 hover:text-red-400"
-                >
-                  🗑
-                </button>
-
-              </div>
-              {activity.location && (
-                <p className="mt-5 text-sm text-neutral-500">
-                  📍 {activity.location}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      ))}
-
-    </div>
-  </div>
 
               <p className="mt-5 text-lg leading-8 text-neutral-300">
                 Your collaborative trip workspace is now ready.
                 Start planning activities, expenses,
                 flights and your daily itinerary together.
               </p>
+
             </div>
 
+            {/* ACTIVITIES */}
+            <TripActivities
+              activities={activities || []}
+              tripId={id}
+            />
+
+            {/* COMING SOON */}
             <div className="rounded-[32px] border border-white/10 bg-white/5 p-8">
+
               <h2 className="text-3xl font-semibold">
                 Coming Soon
               </h2>
@@ -225,6 +153,7 @@ export default async function TripPage({
           <div className="space-y-6">
 
             <div className="rounded-[32px] border border-white/10 bg-white/5 p-6">
+
               <p className="text-neutral-400">
                 Status
               </p>
@@ -232,9 +161,11 @@ export default async function TripPage({
               <h3 className="mt-3 text-3xl font-semibold capitalize">
                 {trip.status}
               </h3>
+
             </div>
 
             <div className="rounded-[32px] border border-white/10 bg-white/5 p-6">
+
               <p className="text-neutral-400">
                 Trip ID
               </p>
@@ -242,6 +173,7 @@ export default async function TripPage({
               <p className="mt-3 break-all text-sm text-neutral-300">
                 {trip.id}
               </p>
+
             </div>
 
           </div>

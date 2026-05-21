@@ -1,18 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+
+type Activity = {
+  title: string;
+  description: string;
+  image: string;
+};
 
 type Props = {
   tripId: string;
+
+  onGenerated: (
+    activities: Activity[]
+  ) => void;
 };
 
 export default function GenerateActivitiesButton({
   tripId,
+  onGenerated,
 }: Props) {
-
-  const router =
-    useRouter();
 
   const [loading, setLoading] =
     useState(false);
@@ -23,23 +30,29 @@ export default function GenerateActivitiesButton({
 
       setLoading(true);
 
-      await fetch(
-        "/api/generate-activities",
-        {
-          method: "POST",
+      const response =
+        await fetch(
+          "/api/generate-activities",
+          {
+            method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
 
-          body: JSON.stringify({
-            tripId,
-          }),
-        }
+            body: JSON.stringify({
+              tripId,
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      onGenerated(
+        data.activities || []
       );
-
-      router.refresh();
 
     } catch (error) {
 
@@ -55,7 +68,7 @@ export default function GenerateActivitiesButton({
     <button
       onClick={generateActivities}
       disabled={loading}
-      className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+      className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-medium text-white transition hover:bg-white/10 disabled:opacity-50"
     >
 
       {loading
