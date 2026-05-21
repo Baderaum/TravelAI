@@ -51,6 +51,22 @@ export async function POST(
       .eq("trip_id", tripId)
       .single();
 
+    // LOAD CURRENT ACTIVITIES
+    const {
+      data: existingActivities,
+    } = await supabase
+      .from("activities")
+      .select("title")
+      .eq("trip_id", tripId);
+
+    const existingTitles =
+      existingActivities
+        ?.map(
+          (activity) =>
+            activity.title
+        )
+        .join(", ");
+
     const prompt = `
 Generate 5 unique travel activities for this destination.
 
@@ -59,6 +75,12 @@ ${trip.destination}
 
 Summary:
 ${destination?.summary}
+
+Existing activities:
+${existingTitles}
+
+Do NOT generate duplicate or very similar activities.
+Avoid repeating existing titles or concepts.
 
 Return JSON only.
 
