@@ -123,7 +123,11 @@ export default async function TripPage({
       {activities?.map((activity) => (
         <div
           key={activity.id}
-          className="overflow-hidden rounded-3xl border border-white/10 bg-black/40"
+          className={`overflow-hidden rounded-3xl border transition ${
+            activity.status === "ai_suggested"
+              ? "border-green-500/30 bg-green-500/5"
+              : "border-white/10 bg-black/40"
+          }`}
         >
 
           <div className="flex">
@@ -144,6 +148,12 @@ export default async function TripPage({
 
                 <div>
 
+                  {activity.status === "ai_suggested" && (
+                    <div className="mb-3 inline-flex rounded-full bg-green-500/20 px-3 py-1 text-xs font-medium text-green-300">
+                      New AI Suggestion
+                    </div>
+                  )}
+
                   <h3 className="text-2xl font-semibold">
                     {activity.title}
                   </h3>
@@ -153,18 +163,18 @@ export default async function TripPage({
                   </p>
                 </div>
 
-                <div className="rounded-full bg-white/10 px-4 py-2 text-sm capitalize">
-                  {activity.status}
-                </div>
+                <button
+                  className="rounded-full bg-white/5 p-3 text-neutral-400 transition hover:bg-red-500/20 hover:text-red-400"
+                >
+                  🗑
+                </button>
 
               </div>
-
               {activity.location && (
                 <p className="mt-5 text-sm text-neutral-500">
                   📍 {activity.location}
                 </p>
               )}
-
             </div>
           </div>
         </div>

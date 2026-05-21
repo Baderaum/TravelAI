@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 type Props = {
@@ -13,33 +14,54 @@ export default function GenerateActivitiesButton({
   const router =
     useRouter();
 
+  const [loading, setLoading] =
+    useState(false);
+
   async function generateActivities() {
 
-    await fetch(
-      "/api/generate-activities",
-      {
-        method: "POST",
+    try {
 
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
+      setLoading(true);
 
-        body: JSON.stringify({
-          tripId,
-        }),
-      }
-    );
+      await fetch(
+        "/api/generate-activities",
+        {
+          method: "POST",
 
-    router.refresh();
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            tripId,
+          }),
+        }
+      );
+
+      router.refresh();
+
+    } catch (error) {
+
+      console.error(error);
+
+    } finally {
+
+      setLoading(false);
+    }
   }
 
   return (
     <button
       onClick={generateActivities}
-      className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-medium text-white transition hover:bg-white/10"
+      disabled={loading}
+      className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      Generate AI Activities
+
+      {loading
+        ? "Generating..."
+        : "Generate AI Activities"}
+
     </button>
   );
 }
