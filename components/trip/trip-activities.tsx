@@ -27,10 +27,17 @@ export default function TripActivities({
   tripId,
 }: Props) {
 
-  const [
-    suggestions,
-    setSuggestions,
-  ] = useState<Activity[]>([]);
+    const [
+        suggestions,
+        setSuggestions,
+    ] = useState<Activity[]>([]);
+
+    const [
+        localActivities,
+        setLocalActivities,
+        ] = useState<Activity[]>(
+        activities
+    );
 
     async function deleteActivity(
     activityId: string
@@ -76,6 +83,11 @@ export default function TripActivities({
       }
     );
 
+    setLocalActivities((prev) => [
+        ...prev,
+        activity,
+    ]);
+
     setSuggestions((prev) =>
       prev.filter(
         (a) =>
@@ -83,7 +95,6 @@ export default function TripActivities({
       )
     );
 
-    window.location.reload();
   }
 
   function dismissActivity(
@@ -116,7 +127,7 @@ export default function TripActivities({
       <div className="mt-8 space-y-5">
 
         {/* REAL ACTIVITIES */}
-        {activities.map((activity) => (
+        {localActivities.map((activity) => (
           <div
             key={activity.id}
             className="overflow-hidden rounded-3xl border border-white/10 bg-black/40"

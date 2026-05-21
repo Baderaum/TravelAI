@@ -73,7 +73,7 @@ export default function GenerateActivitiesButton({
 
       {loading
         ? "Generating..."
-        : "Generate AI Activities"}
+        : "Generate Activities"}
 
     </button>
   );
