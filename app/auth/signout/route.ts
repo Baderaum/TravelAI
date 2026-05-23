@@ -7,6 +7,7 @@ export async function POST(request: Request) {
   await supabase.auth.signOut();
 
   return NextResponse.redirect(
-    new URL("/discover", request.url)
+    new URL("/discover", request.url),
+    303
   );
 }
