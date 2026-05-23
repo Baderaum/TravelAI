@@ -41,6 +41,22 @@ export default async function TripPage({
       ascending: true,
     });
 
+const {
+  data: members,
+} = await supabase
+  .from("trip_members")
+  .select(`
+    role,
+    user_id,
+    profiles!trip_members_user_id_fkey (
+      id,
+      username,
+      email,
+      avatar_url
+    )
+  `)
+  .eq("trip_id", id);
+
   if (!trip) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-black text-white">
@@ -178,8 +194,8 @@ export default async function TripPage({
 
               <InviteMember
                 tripId={id}
+                members={members || []}
               />
-
             </div>
 
           </div>

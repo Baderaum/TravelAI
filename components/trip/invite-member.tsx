@@ -4,10 +4,13 @@ import { useState } from "react";
 
 type Props = {
   tripId: string;
+
+  members: any[];
 };
 
 export default function InviteMember({
   tripId,
+  members,
 }: Props) {
 
   const [email, setEmail] =
@@ -52,11 +55,13 @@ export default function InviteMember({
 
       if (!res.ok) {
         setMessage(
-          data.error
+            data.error
         );
 
+        setLoading(false);
+
         return;
-      }
+        }
 
       setMessage(
         "Member invited 😄"
@@ -76,47 +81,99 @@ export default function InviteMember({
     setLoading(false);
   }
 
-  return (
+    return (
+
     <div className="rounded-[32px] border border-white/10 bg-white/5 p-6">
 
-      <h3 className="text-2xl font-semibold text-white">
-        Invite Member
-      </h3>
+        <div className="flex items-center justify-between">
 
-      <div className="mt-5 flex gap-3">
+        <h3 className="text-2xl font-semibold text-white">
+            Members
+        </h3>
+
+        <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-neutral-300">
+            {members?.length || 0}
+        </span>
+
+        </div>
+
+        {/* INVITE */}
+        <div className="mt-6 flex gap-3">
 
         <input
-          type="email"
-          placeholder="friend@email.com"
-          value={email}
-          onChange={(e) =>
+            type="email"
+            placeholder="friend@email.com"
+            value={email}
+            onChange={(e) =>
             setEmail(
-              e.target.value
+                e.target.value
             )
-          }
-          className="flex-1 rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none placeholder:text-neutral-500"
+            }
+            className="flex-1 rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none placeholder:text-neutral-500"
         />
 
         <button
-          onClick={inviteMember}
-          disabled={loading}
-          className="rounded-2xl bg-white px-5 py-3 font-medium text-black transition hover:bg-neutral-200 disabled:opacity-50"
+            onClick={inviteMember}
+            disabled={loading}
+            className="rounded-2xl bg-white px-5 py-3 font-medium text-black transition hover:bg-neutral-200 disabled:opacity-50"
         >
-          {loading
+            {loading
             ? "Inviting..."
             : "Invite"}
         </button>
 
-      </div>
+        </div>
 
-      {message && (
+        {message && (
 
         <p className="mt-4 text-sm text-neutral-400">
-          {message}
+            {message}
         </p>
 
-      )}
+        )}
+
+        {/* MEMBERS */}
+        <div className="mt-6 space-y-3">
+
+        {members?.map((member: any) => (
+
+            <div
+            key={member.profiles.id}
+            className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/40 p-4"
+            >
+
+            <div className="flex items-center gap-3">
+
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-sm font-bold text-white">
+
+
+                {member.profiles.email
+                    ?.charAt(0)
+                    .toUpperCase()}
+
+                </div>
+
+                <div>
+
+                <p className="font-medium text-white">
+                    {member.profiles.email}
+                </p>
+
+                <p className="text-sm text-neutral-500 capitalize">
+                    {member.role}
+                </p>
+
+                </div>
+
+            </div>
+
+            </div>
+
+        ))}
+
+        </div>
 
     </div>
-  );
+
+    );
 }
