@@ -21,7 +21,28 @@ export default async function TripsPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return null;
+    return (
+      <DashboardShell>
+        <div className="flex min-h-screen items-center justify-center p-10 text-white">
+          <div className="rounded-[32px] border border-white/10 bg-white/5 p-10 text-center">
+            <h1 className="text-3xl font-bold">
+              Please log in
+            </h1>
+
+            <p className="mt-4 text-neutral-400">
+              You need to be logged in to view your trips.
+            </p>
+
+            <Link
+              href="/login"
+              className="mt-8 inline-flex rounded-2xl bg-white px-6 py-4 font-medium text-black transition hover:bg-neutral-200"
+            >
+              Login
+            </Link>
+          </div>
+        </div>
+      </DashboardShell>
+    );
   }
 
   const {
