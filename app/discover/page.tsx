@@ -88,7 +88,7 @@ export default function DiscoverPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/generate-trip", {
+      const res = await fetch("/api/create-discovery", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
