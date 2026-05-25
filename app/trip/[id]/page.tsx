@@ -66,6 +66,14 @@ export default async function TripPage({
     `)
     .eq("trip_id", id);
 
+  const { data: votes } = await supabase
+    .from("activity_votes")
+    .select("*")
+    .in(
+      "activity_id",
+      activities?.map((activity) => activity.id) || []
+  );
+
   if (!trip) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-black text-white">
@@ -288,6 +296,7 @@ export default async function TripPage({
             <TripActivities
               activities={activities || []}
               tripId={id}
+              votes={votes || []}
             />
 
           </div>

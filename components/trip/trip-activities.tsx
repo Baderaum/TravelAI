@@ -14,15 +14,22 @@ type Activity = {
   end_time?: string | null;
 };
 
+type Vote = {
+  activity_id: string;
+  user_id: string;
+  vote: "love" | "interested" | "skip";
+};
+
 type Props = {
   activities: Activity[];
-
   tripId: string;
+  votes: Vote[];
 };
 
 export default function TripActivities({
   activities,
   tripId,
+  votes,
 }: Props) {
 
     const [
@@ -125,6 +132,24 @@ export default function TripActivities({
     );
   }
 
+  async function voteActivity(
+    activityId: string,
+    vote: string
+  ) {
+    await fetch("/api/vote-activity", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        activityId,
+        vote,
+      }),
+    });
+
+    window.location.reload();
+  }
+
   function dismissActivity(
     activity: Activity
   ) {
@@ -180,6 +205,29 @@ export default function TripActivities({
                 <p className="mt-3 text-neutral-400">
                   {activity.description}
                 </p>
+
+                <div className="mt-5 flex gap-2">
+                  {["love", "interested", "skip"].map((vote) => {
+                    const count =
+                      votes.filter(
+                        (v) =>
+                          v.activity_id === activity.id &&
+                          v.vote === vote
+                      ).length;
+
+                    return (
+                      <button
+                        key={vote}
+                        onClick={() =>
+                          voteActivity(activity.id!, vote)
+                        }
+                        className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/10"
+                      >
+                        {vote} {count}
+                      </button>
+                    );
+                  })}
+                </div>
 
                 {activity.id && (
                   <div className="mt-5 grid gap-3 md:grid-cols-2">
