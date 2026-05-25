@@ -84,6 +84,9 @@ export default async function TripPage({
 
   const data = destination?.data || {};
 
+  const coordinates =
+    data.coordinates;
+
   return (
     <div className="min-h-screen bg-black text-white">
 
@@ -327,8 +330,9 @@ export default async function TripPage({
 
               <div className="h-[310px] overflow-hidden rounded-[28px] border border-white/10 bg-[#d9f3ff]">
                 <TripMap
-                  lat={data.coordinates?.lat}
-                  lng={data.coordinates?.lng}
+                  lat={Number(data.coordinates?.lat)}
+                  lng={Number(data.coordinates?.lng)}
+                  activities={activities || []}
                 />
               </div>
 
