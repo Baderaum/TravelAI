@@ -6,14 +6,12 @@ import GenerateActivitiesButton from "./generate-activities-button";
 
 type Activity = {
   id?: string;
-
   title: string;
-
   description: string;
-
   image?: string;
-
   status?: string;
+  start_time?: string | null;
+  end_time?: string | null;
 };
 
 type Props = {
@@ -97,6 +95,36 @@ export default function TripActivities({
 
   }
 
+  async function updateActivityTime(
+    activityId: string,
+    startTime: string,
+    endTime: string
+  ) {
+    await fetch("/api/update-activity-time", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        activityId,
+        startTime,
+        endTime,
+      }),
+    });
+
+    setLocalActivities((prev) =>
+      prev.map((activity) =>
+        activity.id === activityId
+          ? {
+              ...activity,
+              start_time: startTime,
+              end_time: endTime,
+            }
+          : activity
+      )
+    );
+  }
+
   function dismissActivity(
     activity: Activity
   ) {
@@ -152,6 +180,48 @@ export default function TripActivities({
                 <p className="mt-3 text-neutral-400">
                   {activity.description}
                 </p>
+
+                {activity.id && (
+                  <div className="mt-5 grid gap-3 md:grid-cols-2">
+                    <input
+                      type="datetime-local"
+                      defaultValue={
+                        activity.start_time
+                          ? activity.start_time.slice(0, 16)
+                          : ""
+                      }
+                      onBlur={(e) =>
+                        updateActivityTime(
+                          activity.id!,
+                          e.target.value,
+                          activity.end_time
+                            ? activity.end_time.slice(0, 16)
+                            : ""
+                        )
+                      }
+                      className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none"
+                    />
+
+                    <input
+                      type="datetime-local"
+                      defaultValue={
+                        activity.end_time
+                          ? activity.end_time.slice(0, 16)
+                          : ""
+                      }
+                      onBlur={(e) =>
+                        updateActivityTime(
+                          activity.id!,
+                          activity.start_time
+                            ? activity.start_time.slice(0, 16)
+                            : "",
+                          e.target.value
+                        )
+                      }
+                      className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none"
+                    />
+                  </div>
+                )}
 
                 <div className="mt-6 flex justify-end">
 
