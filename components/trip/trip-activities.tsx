@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import GenerateActivitiesButton from "./generate-activities-button";
 
+import ActivityModal from "./activity-modal";
+
 type Activity = {
   id?: string;
   title: string;
@@ -43,6 +45,9 @@ export default function TripActivities({
         ] = useState<Activity[]>(
         activities
     );
+
+    const [selectedActivity, setSelectedActivity] =
+      useState<Activity | null>(null);
 
     async function deleteActivity(
     activityId: string
@@ -183,7 +188,8 @@ export default function TripActivities({
         {localActivities.map((activity) => (
           <div
             key={activity.id}
-            className="overflow-hidden rounded-3xl border border-white/10 bg-black/40"
+            onClick={() => setSelectedActivity(activity)}
+            className="group cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-black/40 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.06] hover:shadow-[0_0_40px_rgba(255,255,255,0.06)]"
           >
 
             <div className="flex">
@@ -192,13 +198,13 @@ export default function TripActivities({
                 <img
                   src={activity.image}
                   alt={activity.title}
-                  className="h-44 w-56 object-cover"
+                  className="h-44 w-56 object-cover transition duration-500 group-hover:scale-105"
                 />
               )}
 
               <div className="flex flex-1 flex-col justify-between p-5">
 
-                <h3 className="text-2xl font-semibold">
+                <h3 className="text-2xl font-semibold transition group-hover:text-green-300">
                   {activity.title}
                 </h3>
 
@@ -218,9 +224,11 @@ export default function TripActivities({
                     return (
                       <button
                         key={vote}
-                        onClick={() =>
-                          voteActivity(activity.id!, vote)
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          voteActivity(activity.id!, vote);
+                        }}
                         className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/10"
                       >
                         {vote} {count}
@@ -274,14 +282,18 @@ export default function TripActivities({
                 <div className="mt-6 flex justify-end">
 
                 <button
-                    onClick={() =>
-                        deleteActivity(
-                        activity.id!
-                        )
-                    }
-                    className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-300 active:scale-[0.98]"
-                    >
-                    Delete
+                  onClick={(e) => {
+
+                    e.stopPropagation();
+
+                    deleteActivity(
+                      activity.id!
+                    );
+
+                  }}
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-300 active:scale-[0.98]"
+                >
+                  Delete
                 </button>
 
                 </div>
@@ -304,7 +316,7 @@ export default function TripActivities({
                 <img
                   src={activity.image}
                   alt={activity.title}
-                  className="h-44 w-56 object-cover"
+                  className="h-44 w-56 object-cover transition duration-500 group-hover:scale-105"
                 />
               )}
 
@@ -316,7 +328,7 @@ export default function TripActivities({
                     AI Suggestion
                   </div>
 
-                  <h3 className="text-2xl font-semibold">
+                  <h3 className="text-2xl font-semibold transition group-hover:text-green-300">
                     {activity.title}
                   </h3>
 
@@ -357,6 +369,15 @@ export default function TripActivities({
         ))}
 
       </div>
+      <ActivityModal
+        activity={selectedActivity}
+        open={!!selectedActivity}
+        onOpenChange={() =>
+          setSelectedActivity(null)
+        }
+        onDelete={deleteActivity}
+        onUpdateTime={updateActivityTime}
+      />
     </div>
   );
 }
