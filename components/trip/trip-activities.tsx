@@ -191,28 +191,27 @@ export default function TripActivities({
             onClick={() => setSelectedActivity(activity)}
             className="group cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-black/40 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.06] hover:shadow-[0_0_40px_rgba(255,255,255,0.06)]"
           >
-
-            <div className="flex">
-
+            <div className="flex items-center gap-4 p-3">
               {activity.image && (
                 <img
                   src={activity.image}
                   alt={activity.title}
-                  className="h-44 w-56 object-cover transition duration-500 group-hover:scale-105"
+                  className="h-24 w-32 rounded-2xl object-cover transition duration-500 group-hover:scale-105"
                 />
               )}
 
-              <div className="flex flex-1 flex-col justify-between p-5">
-
-                <h3 className="text-2xl font-semibold transition group-hover:text-green-300">
+              <div className="min-w-0 flex-1">
+                <h3 className="truncate text-xl font-semibold transition group-hover:text-green-300">
                   {activity.title}
                 </h3>
 
-                <p className="mt-3 text-neutral-400">
-                  {activity.description}
+                <p className="mt-2 text-sm text-neutral-400">
+                  {activity.start_time
+                    ? new Date(activity.start_time).toLocaleString()
+                    : "No time set"}
                 </p>
 
-                <div className="mt-5 flex gap-2">
+                <div className="mt-4 flex flex-wrap gap-2">
                   {["love", "interested", "skip"].map((vote) => {
                     const count =
                       votes.filter(
@@ -229,76 +228,25 @@ export default function TripActivities({
 
                           voteActivity(activity.id!, vote);
                         }}
-                        className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/10"
+                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white transition hover:bg-white/10"
                       >
                         {vote} {count}
                       </button>
                     );
                   })}
                 </div>
-
-                {activity.id && (
-                  <div className="mt-5 grid gap-3 md:grid-cols-2">
-                    <input
-                      type="datetime-local"
-                      defaultValue={
-                        activity.start_time
-                          ? activity.start_time.slice(0, 16)
-                          : ""
-                      }
-                      onBlur={(e) =>
-                        updateActivityTime(
-                          activity.id!,
-                          e.target.value,
-                          activity.end_time
-                            ? activity.end_time.slice(0, 16)
-                            : ""
-                        )
-                      }
-                      className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none"
-                    />
-
-                    <input
-                      type="datetime-local"
-                      defaultValue={
-                        activity.end_time
-                          ? activity.end_time.slice(0, 16)
-                          : ""
-                      }
-                      onBlur={(e) =>
-                        updateActivityTime(
-                          activity.id!,
-                          activity.start_time
-                            ? activity.start_time.slice(0, 16)
-                            : "",
-                          e.target.value
-                        )
-                      }
-                      className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none"
-                    />
-                  </div>
-                )}
-
-                <div className="mt-6 flex justify-end">
-
-                <button
-                  onClick={(e) => {
-
-                    e.stopPropagation();
-
-                    deleteActivity(
-                      activity.id!
-                    );
-
-                  }}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-300 active:scale-[0.98]"
-                >
-                  Delete
-                </button>
-
-                </div>
-
               </div>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  deleteActivity(activity.id!);
+                }}
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-300 active:scale-[0.98]"
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}
@@ -377,6 +325,32 @@ export default function TripActivities({
         }
         onDelete={deleteActivity}
         onUpdateTime={updateActivityTime}
+
+        onUpdateActivity={(
+          activityId,
+          updates
+        ) => {
+
+          setLocalActivities((prev) =>
+            prev.map((activity) =>
+              activity.id === activityId
+                ? {
+                    ...activity,
+                    ...updates,
+                  }
+                : activity
+            )
+          );
+
+          setSelectedActivity((prev) =>
+            prev?.id === activityId
+              ? {
+                  ...prev,
+                  ...updates,
+                }
+              : prev
+          );
+        }}
       />
     </div>
   );

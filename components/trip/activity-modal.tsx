@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Settings } from "lucide-react";
+
 import {
   Dialog,
   DialogContent,
@@ -28,7 +30,26 @@ type Props = {
     startTime: string,
     endTime: string
   ) => void;
+
+  onUpdateActivity?: (
+    activityId: string,
+    updates: {
+      title: string;
+      description: string;
+      start_time: string | null;
+      end_time: string | null;
+    }
+  ) => void;
 };
+
+function formatDateTime(value?: string | null) {
+  if (!value) return "Not set";
+
+  return new Date(value).toLocaleString([], {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
 
 export default function ActivityModal({
   activity,
@@ -36,20 +57,97 @@ export default function ActivityModal({
   onOpenChange,
   onDelete,
   onUpdateTime,
+  onUpdateActivity,
 }: Props) {
-  const [startTime, setStartTime] = useState(
-    activity?.start_time?.slice(0, 16) || ""
-  );
+  const [editing, setEditing] =
+    useState(false);
 
-  const [endTime, setEndTime] = useState(
-    activity?.end_time?.slice(0, 16) || ""
-  );
+  const [title, setTitle] =
+    useState("");
+
+  const [description, setDescription] =
+    useState("");
+
+  const [startTime, setStartTime] =
+    useState("");
+
+  const [endTime, setEndTime] =
+    useState("");
+
+  useEffect(() => {
+    if (!activity) return;
+
+    setEditing(false);
+
+    setTitle(
+      activity.title || ""
+    );
+
+    setDescription(
+      activity.description || ""
+    );
+
+    setStartTime(
+      activity.start_time
+        ? activity.start_time.slice(0, 16)
+        : ""
+    );
+
+    setEndTime(
+      activity.end_time
+        ? activity.end_time.slice(0, 16)
+        : ""
+    );
+  }, [activity]);
 
   if (!activity) return null;
 
+  async function saveChanges() {
+    if (!activity?.id) return;
+
+    await fetch("/api/update-activity-details", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        activityId: activity.id,
+        title,
+        description,
+        startTime,
+        endTime,
+      }),
+    });
+
+    onUpdateTime?.(
+      activity.id,
+      startTime,
+      endTime
+    );
+
+    onUpdateActivity?.(activity.id, {
+    title,
+    description,
+    start_time: startTime || null,
+    end_time: endTime || null,
+    });
+
+    setEditing(false);
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-full !max-w-4xl overflow-y-auto rounded-[32px] border border-white/10 bg-black p-0 text-white shadow-[0_0_120px_rgba(34,197,94,0.15)]">
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        onOpenChange(value);
+
+        if (!value) {
+          setEditing(false);
+        }
+      }}
+    >
+      <DialogContent className="max-h-[90vh] w-full !max-w-5xl overflow-y-auto rounded-[32px] border border-white/10 bg-black p-0 text-white shadow-[0_0_120px_rgba(34,197,94,0.15)]">
+
         <DialogTitle className="sr-only">
           Activity Details
         </DialogTitle>
@@ -59,65 +157,122 @@ export default function ActivityModal({
         </DialogDescription>
 
         <div className="overflow-hidden rounded-[28px]">
-          <div className="relative h-[300px] w-full">
+
+          {/* HERO */}
+          <div className="relative h-[320px] w-full">
+
             {activity.image && (
               <img
                 src={activity.image}
-                alt={activity.title}
+                alt={title}
                 className="h-full w-full object-cover"
               />
             )}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent" />
 
-            <div className="absolute bottom-0 left-0 p-8">
-              <p className="mb-3 w-fit rounded-full bg-green-500/20 px-4 py-2 text-sm text-green-300">
+            <button
+                onClick={() => {
+
+                    if (editing) {
+                    saveChanges();
+                    return;
+                    }
+
+                    setEditing(true);
+                }}
+                className="absolute bottom-8 right-8 flex h-12 min-w-[92px] items-center justify-center rounded-2xl border border-white/10 bg-white/10 px-4 text-sm font-medium text-white backdrop-blur transition hover:bg-white/20"
+                >
+                {editing
+                    ? "Save"
+                    : "Edit"}
+            </button>
+
+            <div className="absolute bottom-0 left-0 p-8 pr-24">
+
+              <p className="mb-4 w-fit rounded-full bg-green-500/20 px-4 py-2 text-sm text-green-300">
                 Activity
               </p>
 
-              <h2 className="text-5xl font-bold">
-                {activity.title}
-              </h2>
+              {editing ? (
+                <input
+                  value={title}
+                  onChange={(e) =>
+                    setTitle(e.target.value)
+                  }
+                  className="w-full bg-transparent text-5xl font-bold text-white outline-none"
+                />
+              ) : (
+                <h2 className="text-5xl font-bold">
+                  {title}
+                </h2>
+              )}
+
             </div>
           </div>
 
-          <div className="grid gap-8 p-8 lg:grid-cols-[1.2fr_0.8fr]">
+          {/* CONTENT */}
+          <div className="grid gap-8 p-8 lg:grid-cols-[1.25fr_0.75fr]">
+
+            {/* LEFT */}
             <div>
+
               <h3 className="text-3xl font-semibold">
                 About
               </h3>
 
-              <p className="mt-4 text-lg leading-8 text-neutral-300">
-                {activity.description}
-              </p>
+              {editing ? (
+                <textarea
+                  value={description}
+                  onChange={(e) =>
+                    setDescription(e.target.value)
+                  }
+                  className="mt-5 min-h-[220px] w-full rounded-3xl border border-white/10 bg-white/[0.04] p-5 text-lg leading-8 text-white outline-none"
+                />
+              ) : (
+                <p className="mt-5 text-lg leading-8 text-neutral-300">
+                  {description}
+                </p>
+              )}
 
               {activity.location && (
                 <p className="mt-6 text-neutral-400">
                   📍 {activity.location}
                 </p>
               )}
+
             </div>
 
+            {/* RIGHT */}
             <div className="space-y-5">
+
               <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+
                 <h3 className="text-2xl font-semibold">
                   Schedule
                 </h3>
 
                 <div className="mt-5 space-y-4">
+
                   <div>
                     <p className="mb-2 text-sm text-neutral-500">
                       Start
                     </p>
 
-                    <input
-                      type="datetime-local"
-                      value={startTime}
-                      onChange={(e) =>
-                        setStartTime(e.target.value)
-                      }
-                      className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-                    />
+                    {editing ? (
+                      <input
+                        type="datetime-local"
+                        value={startTime}
+                        onChange={(e) =>
+                          setStartTime(e.target.value)
+                        }
+                        className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
+                      />
+                    ) : (
+                      <div className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-neutral-300">
+                        {formatDateTime(activity.start_time)}
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -125,32 +280,21 @@ export default function ActivityModal({
                       End
                     </p>
 
-                    <input
-                      type="datetime-local"
-                      value={endTime}
-                      onChange={(e) =>
-                        setEndTime(e.target.value)
-                      }
-                      className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-                    />
+                    {editing ? (
+                      <input
+                        type="datetime-local"
+                        value={endTime}
+                        onChange={(e) =>
+                          setEndTime(e.target.value)
+                        }
+                        className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
+                      />
+                    ) : (
+                      <div className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-neutral-300">
+                        {formatDateTime(activity.end_time)}
+                      </div>
+                    )}
                   </div>
-
-                  <button
-                    onClick={() => {
-                      if (!activity.id) return;
-
-                      onUpdateTime?.(
-                        activity.id,
-                        startTime,
-                        endTime
-                      );
-
-                      onOpenChange(false);
-                    }}
-                    className="w-full rounded-2xl bg-white px-5 py-3 font-medium text-black transition hover:bg-neutral-200"
-                  >
-                    Save Time
-                  </button>
                 </div>
               </div>
 
@@ -165,6 +309,7 @@ export default function ActivityModal({
                   Delete Activity
                 </button>
               )}
+
             </div>
           </div>
         </div>
