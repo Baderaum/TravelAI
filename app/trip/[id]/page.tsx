@@ -19,6 +19,7 @@ import { createClient } from "@/lib/supabase/server";
 import TripActivities from "@/components/trip/trip-activities";
 import InviteMember from "@/components/trip/invite-member";
 import TripMap from "@/components/trip/trip-map";
+import TripDates from "@/components/trip/trip-dates";
 
 export default async function TripPage({
   params,
@@ -293,6 +294,12 @@ export default async function TripPage({
 
           {/* RIGHT */}
           <aside className="space-y-6">
+
+            <TripDates
+              tripId={id}
+              startDate={trip.start_date}
+              endDate={trip.end_date}
+            />
 
             {/* MAP */}
             <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-6">
