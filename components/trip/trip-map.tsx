@@ -20,12 +20,14 @@ type Props = {
   lat?: number;
   lng?: number;
   activities?: Activity[];
+  scale?: number;
 };
 
 export default function TripMap({
   lat,
   lng,
   activities = [],
+  scale = 750,
 }: Props) {
   const hasCoordinates =
     typeof lat === "number" &&

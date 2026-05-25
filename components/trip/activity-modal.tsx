@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Settings } from "lucide-react";
+import TripMap from "@/components/trip/trip-map";
 
 import {
   Dialog,
@@ -18,6 +19,8 @@ type Activity = {
   location?: string | null;
   start_time?: string | null;
   end_time?: string | null;
+  lat?: number | null;
+  lng?: number | null;    
 };
 
 type Props = {
@@ -146,7 +149,7 @@ export default function ActivityModal({
         }
       }}
     >
-      <DialogContent className="max-h-[90vh] w-full !max-w-5xl overflow-y-auto rounded-[32px] border border-white/10 bg-black p-0 text-white shadow-[0_0_120px_rgba(34,197,94,0.15)]">
+      <DialogContent className="max-h-[90vh] w-full !max-w-5xl overflow-hidden rounded-[32px] border border-white/10 bg-black p-0 text-white shadow-[0_0_120px_rgba(34,197,94,0.15)]">
 
         <DialogTitle className="sr-only">
           Activity Details
@@ -156,7 +159,7 @@ export default function ActivityModal({
           View and edit activity details.
         </DialogDescription>
 
-        <div className="overflow-hidden rounded-[28px]">
+        <div className="max-h-[90vh] overflow-y-auto rounded-[28px]">
 
           {/* HERO */}
           <div className="relative h-[320px] w-full">
@@ -310,6 +313,29 @@ export default function ActivityModal({
                 </button>
               )}
 
+            </div>
+          </div>
+          <div className="px-8 pb-8">
+            <div className="rounded-[32px] border border-white/10 bg-white/[0.04] p-6">
+              <h3 className="text-2xl font-semibold">
+                Location
+              </h3>
+
+              <div className="mt-5 h-[360px] overflow-hidden rounded-[28px] border border-white/10 bg-[#d9f3ff]">
+                <TripMap
+                  lat={Number(activity.lat)}
+                  lng={Number(activity.lng)}
+                />
+              </div>
+
+              <p className="mt-4 text-neutral-400">
+                {activity.location ||
+                (
+                    activity.lat && activity.lng
+                    ? `${Number(activity.lat).toFixed(4)}, ${Number(activity.lng).toFixed(4)}`
+                    : "No activity location set yet."
+                )}
+              </p>
             </div>
           </div>
         </div>

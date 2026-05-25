@@ -6,6 +6,8 @@ import GenerateActivitiesButton from "./generate-activities-button";
 
 import ActivityModal from "./activity-modal";
 
+import AskDialog from "@/components/ui/ask-dialog";
+
 type Activity = {
   id?: string;
   title: string;
@@ -48,6 +50,16 @@ export default function TripActivities({
 
     const [selectedActivity, setSelectedActivity] =
       useState<Activity | null>(null);
+
+    const [
+      activityToDelete,
+      setActivityToDelete,
+    ] = useState<Activity | null>(null);
+
+    const [
+      deleteLoading,
+      setDeleteLoading,
+    ] = useState(false);
 
     async function deleteActivity(
     activityId: string
@@ -206,9 +218,106 @@ export default function TripActivities({
                 </h3>
 
                 <p className="mt-2 text-sm text-neutral-400">
-                  {activity.start_time
-                    ? new Date(activity.start_time).toLocaleString()
-                    : "No time set"}
+                  {activity.start_time ? (
+                    (() => {
+                      const start =
+                        new Date(
+                          activity.start_time
+                        );
+                      const end =
+                        activity.end_time
+                          ? new Date(
+                              activity.end_time
+                            )
+                          : null;
+                      const sameDay =
+                        end &&
+                        start.toDateString() === end.toDateString();
+
+                      if (sameDay) {
+
+                        return (
+                          <>
+                            {start.toLocaleDateString(
+                              [],
+                              {
+                                weekday: "short",
+                                day: "numeric",
+                                month: "short",
+                              }
+                            )}
+                            {" • "}
+                            {start.toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                            {" - "}
+                            {end.toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </>
+                        );
+                      }
+
+                      return (
+                        <>
+                          {start.toLocaleDateString(
+                            [],
+                            {
+                              day: "numeric",
+                              month: "short",
+                            }
+                          )}
+
+                          {" "}
+
+                          {start.toLocaleTimeString(
+                            [],
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
+
+                          {" → "}
+
+                          {end
+                            ? (
+                                <>
+                                  {end.toLocaleDateString(
+                                    [],
+                                    {
+                                      day: "numeric",
+                                      month: "short",
+                                    }
+                                  )}
+
+                                  {" "}
+
+                                  {end.toLocaleTimeString(
+                                    [],
+                                    {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    }
+                                  )}
+                                </>
+                              )
+                            : ""}
+                        </>
+                      );
+                    })()
+
+                  ) : (
+                    "No time set"
+                  )}
                 </p>
 
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -241,7 +350,7 @@ export default function TripActivities({
                 onClick={(e) => {
                   e.stopPropagation();
 
-                  deleteActivity(activity.id!);
+                  setActivityToDelete(activity);
                 }}
                 className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-300 active:scale-[0.98]"
               >
@@ -323,7 +432,16 @@ export default function TripActivities({
         onOpenChange={() =>
           setSelectedActivity(null)
         }
-        onDelete={deleteActivity}
+        onDelete={(activityId) => {
+          const activity =
+            localActivities.find(
+              (item) => item.id === activityId
+            );
+
+          if (activity) {
+            setActivityToDelete(activity);
+          }
+        }}
         onUpdateTime={updateActivityTime}
 
         onUpdateActivity={(
@@ -350,6 +468,30 @@ export default function TripActivities({
                 }
               : prev
           );
+        }}
+      />
+      <AskDialog
+        open={!!activityToDelete}
+        title="Delete activity?"
+        question={`Do you really want to delete "${activityToDelete?.title}"? This cannot be undone.`}
+        yesLabel="Delete"
+        noLabel="Cancel"
+        loading={deleteLoading}
+        onAnswer={async (result) => {
+          if (result === "no" || result === "closed") {
+            setActivityToDelete(null);
+            return;
+          }
+
+          if (!activityToDelete?.id) return;
+
+          setDeleteLoading(true);
+
+          await deleteActivity(activityToDelete.id);
+
+          setDeleteLoading(false);
+          setActivityToDelete(null);
+          setSelectedActivity(null);
         }}
       />
     </div>
