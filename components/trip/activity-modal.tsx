@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Settings } from "lucide-react";
+import { Settings, X } from "lucide-react";
 import TripMap from "@/components/trip/trip-map";
 
 import {
@@ -77,6 +77,9 @@ export default function ActivityModal({
   const [endTime, setEndTime] =
     useState("");
 
+  const [imageOpen, setImageOpen] =
+    useState(false);
+
   useEffect(() => {
     if (!activity) return;
 
@@ -143,9 +146,9 @@ export default function ActivityModal({
       open={open}
       onOpenChange={(value) => {
         onOpenChange(value);
-
         if (!value) {
           setEditing(false);
+          setImageOpen(false);
         }
       }}
     >
@@ -162,17 +165,23 @@ export default function ActivityModal({
         <div className="max-h-[90vh] overflow-y-auto rounded-[28px]">
 
           {/* HERO */}
-          <div className="relative h-[320px] w-full">
+          <div className="relative h-[320px] w-full overflow-hidden">
 
             {activity.image && (
-              <img
-                src={activity.image}
-                alt={title}
-                className="h-full w-full object-cover"
-              />
+              <button
+                type="button"
+                onClick={() => setImageOpen(true)}
+                className="absolute inset-0 h-full w-full cursor-zoom-in"
+              >
+                <img
+                  src={activity.image}
+                  alt={title}
+                  className="h-full w-full object-cover"
+                />
+              </button>
             )}
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent" />
 
             <button
                 onClick={() => {
@@ -184,14 +193,14 @@ export default function ActivityModal({
 
                     setEditing(true);
                 }}
-                className="absolute bottom-8 right-8 flex h-12 min-w-[92px] items-center justify-center rounded-2xl border border-white/10 bg-white/10 px-4 text-sm font-medium text-white backdrop-blur transition hover:bg-white/20"
+                className="absolute bottom-8 right-8 z-10 flex h-12 min-w-[92px] items-center justify-center rounded-2xl border border-white/10 bg-white/10 px-4 text-sm font-medium text-white backdrop-blur transition hover:bg-white/20"
                 >
                 {editing
                     ? "Save"
                     : "Edit"}
             </button>
 
-            <div className="absolute bottom-0 left-0 p-8 pr-24">
+            <div className="absolute bottom-0 left-0 z-10 p-8 pr-24">
 
               <p className="mb-4 w-fit rounded-full bg-green-500/20 px-4 py-2 text-sm text-green-300">
                 Activity
@@ -340,6 +349,30 @@ export default function ActivityModal({
           </div>
         </div>
       </DialogContent>
+      {activity.image && imageOpen && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-6"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setImageOpen(false);
+            }}
+            className="absolute right-8 top-8 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white transition hover:bg-white/20"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          <img
+            src={activity.image}
+            alt={title}
+            className="max-h-[90vh] max-w-[90vw] rounded-[32px] object-contain shadow-[0_0_120px_rgba(255,255,255,0.12)]"
+          />
+        </div>
+      )}
     </Dialog>
   );
 }
