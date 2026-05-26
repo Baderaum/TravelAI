@@ -202,43 +202,6 @@ export default async function TripPage({
           {/* LEFT */}
           <div className="space-y-8">
 
-            {/* SUMMARY */}
-            <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-8">
-
-              <div className="flex items-center gap-3">
-                <Sparkles className="h-6 w-6 text-green-400" />
-
-                <h2 className="text-3xl font-semibold">
-                  Trip Overview
-                </h2>
-              </div>
-
-              <p className="mt-6 text-lg leading-8 text-neutral-300">
-                {destination?.summary ||
-                  "Your collaborative trip workspace is ready. Start planning activities, flights, expenses and your daily itinerary together."}
-              </p>
-
-              {data.why_match?.length > 0 && (
-                <div className="mt-7 grid gap-4 md:grid-cols-2">
-
-                  {data.why_match.map((reason: string) => (
-                    <div
-                      key={reason}
-                      className="flex gap-3 rounded-2xl border border-white/10 bg-black/40 p-4"
-                    >
-                      <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-green-400" />
-
-                      <p className="text-neutral-300">
-                        {reason}
-                      </p>
-                    </div>
-                  ))}
-
-                </div>
-              )}
-
-            </div>
-
             {/* NEXT ACTIONS */}
             <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-8">
 
@@ -293,6 +256,7 @@ export default async function TripPage({
                 </div>
 
               </div>
+              
             </div>
 
             {/* ACTIVITIES */}
@@ -302,6 +266,40 @@ export default async function TripPage({
               votes={votes || []}
             />
 
+            {/* SUMMARY */}
+            <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-8">
+
+              <div className="flex items-center gap-3">
+                <Sparkles className="h-6 w-6 text-green-400" />
+
+                <h2 className="text-3xl font-semibold">
+                  Why is this a match
+                </h2>
+              </div>
+
+              <p className="mt-6 text-lg leading-8 text-neutral-300">
+                {destination?.summary ||
+                  "Your collaborative trip workspace is ready. Start planning activities, flights, expenses and your daily itinerary together."}
+              </p>
+
+              {data.why_match?.length > 0 && (
+                <div className="mt-7 grid gap-4 md:grid-cols-2">
+
+                  {data.why_match.map((reason: string) => (
+                    <div
+                      key={reason}
+                      className="flex gap-3 rounded-2xl border border-white/10 bg-black/40 p-4"
+                    >
+                      <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-green-400" />
+
+                      <p className="text-neutral-300">
+                        {reason}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* RIGHT */}
