@@ -38,6 +38,9 @@ export async function POST(request: Request) {
         title:
           destination.name,
 
+        description:
+          destination.subtitle,
+
         destination:
           destination.name,
 

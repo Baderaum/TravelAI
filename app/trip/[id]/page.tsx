@@ -20,6 +20,7 @@ import TripActivities from "@/components/trip/trip-activities";
 import InviteMember from "@/components/trip/invite-member";
 import TripMap from "@/components/trip/trip-map";
 import TripDates from "@/components/trip/trip-dates";
+import TripSettings from "@/components/trip/trip-settings";
 
 export default async function TripPage({
   params,
@@ -112,7 +113,8 @@ export default async function TripPage({
             Back to Trips
           </Link>
 
-          <div className="mt-20 max-w-4xl">
+          <div className="mt-20 flex items-start justify-between gap-8">
+            <div className="max-w-4xl">
 
             <div className="mb-5 flex flex-wrap items-center gap-3">
 
@@ -137,10 +139,19 @@ export default async function TripPage({
             </h1>
 
             <p className="mt-5 max-w-2xl text-xl leading-8 text-neutral-300">
-              {data.subtitle || trip.destination}
+              {trip.description}
             </p>
-
           </div>
+
+          <TripSettings
+            tripId={id}
+            title={trip.title}
+            description={trip.description}
+            startDate={trip.start_date}
+            endDate={trip.end_date}
+            members={members || []}
+          />
+        </div>
         </div>
       </section>
 
