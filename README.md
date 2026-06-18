@@ -1,5 +1,7 @@
 # TravelAI
 
+Author: Felix Wandschura
+
 AI-powered travel planning application built with Next.js and Supabase.
 
 ## Screenshots
