@@ -15,6 +15,7 @@ export async function POST(req: Request) {
       vibes,
       extraInfo,
       budgetAmount,
+      homeLocation,
       pace,
       accommodation,
       travelPersonality,
@@ -27,11 +28,11 @@ export async function POST(req: Request) {
     const prompt = `
 Group Size: ${groupSize}
 Age (younger people are more active): ${ageGroup}
-Departure Country: ${departure}
+Home Location / Departure Area: ${homeLocation || departure}
 Preferred Temperature: ${temperature}
 Distance Preference: ${distance}
 Trip Type: ${tripType}
-Budget Per Person: ${currency}${budgetAmount}
+Total Budget Per Person Including Estimated Round-Trip Flight: ${currency}${budgetAmount}
 Travel Personality: ${travelPersonality}
 Travel Pace: ${pace}
 Accommodation Style: ${accommodation}
@@ -58,6 +59,10 @@ You are an elite AI travel recommendation engine.
 
 Your task:
 - Recommend destinations matching the user's preferences
+- Choose the most likely nearby departure airport from the user's home location
+- Choose the most useful destination airport for every destination
+- Estimate realistic round-trip flight budget per person from the departure airport to the destination airport
+- Include that flight estimate inside estimated_budget, so estimated_budget feels like a complete trip budget
 - Consider travel distance carefully
 - Match the group's vibe and budget
 - Avoid generic recommendations if possible
@@ -71,7 +76,10 @@ The maximum amount of destinations is 3, // IGNORE THIS PART: "but if it is 3 or
 
 The activities should be at least 3 in amount. Look for things to do only at that locations and also "going to beach" and basic stuff
 
-The flight_time has to be the flight time from the destination and ONLY if there is a necessary ferry or bus ride to take, then say it inside flightime too (like "3,5h + 1,5h ferry")
+The flight_time has to be the flight time from the departure airport to the destination airport and ONLY if there is a necessary ferry or bus ride to take, then say it inside flightime too (like "3,5h + 1,5h ferry")
+
+The flight_budget must be a realistic estimated round-trip economy flight price per person in the selected currency.
+Use IATA airport codes for departure_airport_code and destination_airport_code, for example CGN, DUS, FRA, MUC, BER, MXP, LIN, FCO, BCN.
 
 
 JSON format:
@@ -83,6 +91,10 @@ JSON format:
       "summary": "Perfect for beach vacations and nightlife.",
       "match_score": 92,
       "estimated_budget": 700,
+      "flight_budget": 180,
+      "departure_location": "Cologne, Germany",
+      "departure_airport_code": "CGN",
+      "destination_airport_code": "PMI",
       "best_for": "Friend groups",
       "vibes": ["beach", "party", "cheap"],
       "weather": "28°C",

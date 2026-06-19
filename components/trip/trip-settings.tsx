@@ -9,8 +9,27 @@ type TripSettingsProps = {
   description?: string | null;
   startDate?: string | null;
   endDate?: string | null;
-  members: any[];
+  members: TripMember[];
 };
+
+type TripMember = {
+  user_id: string;
+  role: string;
+  profiles?: TripMemberProfile | TripMemberProfile[] | null;
+};
+
+type TripMemberProfile = {
+    username?: string | null;
+    email?: string | null;
+};
+
+function getMemberLabel(member: TripMember) {
+  const profile = Array.isArray(member.profiles)
+    ? member.profiles[0]
+    : member.profiles;
+
+  return profile?.username || profile?.email || "Unknown user";
+}
 
 export default function TripSettings({
   tripId,
@@ -68,8 +87,8 @@ export default function TripSettings({
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-6 backdrop-blur-sm">
-          <div className="w-full max-w-2xl rounded-[36px] border border-white/10 bg-[#0b0b0b] p-8 text-white shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm sm:p-6">
+          <div className="max-h-[calc(100dvh-2rem)] w-full max-w-2xl overflow-y-auto rounded-[36px] border border-white/10 bg-[#0b0b0b] p-6 text-white shadow-2xl scrollbar-thin scrollbar-thumb-white/20 sm:max-h-[calc(100dvh-3rem)] sm:p-8">
             <div className="flex items-start justify-between gap-6">
               <div>
                 <h2 className="text-3xl font-semibold">Trip Settings</h2>
@@ -149,15 +168,13 @@ export default function TripSettings({
 
                 <div className="space-y-3">
                   {members.length > 0 ? (
-                    members.map((member: any) => (
+                    members.map((member) => (
                       <div
                         key={member.user_id}
                         className="flex items-center justify-between rounded-xl bg-black/40 px-4 py-3"
                       >
                         <span>
-                          {member.profiles?.username ||
-                            member.profiles?.email ||
-                            "Unknown user"}
+                          {getMemberLabel(member)}
                         </span>
 
                         <span className="text-sm capitalize text-neutral-500">

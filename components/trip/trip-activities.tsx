@@ -7,6 +7,7 @@ import GenerateActivitiesButton from "./generate-activities-button";
 import ActivityModal from "./activity-modal";
 
 import AskDialog from "@/components/ui/ask-dialog";
+import CollapsibleSection from "@/components/ui/collapsible-section";
 
 type Activity = {
   id?: string;
@@ -180,21 +181,17 @@ export default function TripActivities({
   }
 
   return (
-    <div className="rounded-[32px] border border-white/10 bg-white/5 p-8">
-
-      <div className="flex items-center justify-between">
-
-        <h2 className="text-3xl font-semibold">
-          Activities
-        </h2>
-
+    <CollapsibleSection
+      title="Activities"
+      actions={(
         <GenerateActivitiesButton
           tripId={tripId}
           onGenerated={setSuggestions}
         />
-      </div>
-
-      <div className="mt-8 space-y-5">
+      )}
+      className="rounded-[32px] bg-white/5"
+      contentClassName="space-y-5"
+    >
 
         {/* REAL ACTIVITIES */}
         {localActivities.map((activity) => (
@@ -425,7 +422,6 @@ export default function TripActivities({
           </div>
         ))}
 
-      </div>
       <ActivityModal
         activity={selectedActivity}
         open={!!selectedActivity}
@@ -494,6 +490,6 @@ export default function TripActivities({
           setSelectedActivity(null);
         }}
       />
-    </div>
+    </CollapsibleSection>
   );
 }

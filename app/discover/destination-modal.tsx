@@ -42,7 +42,7 @@ export function DestinationModal({
   const router = useRouter();
 
   async function createTrip(
-    destination: any
+    destination: Destination
   ) {
     try {
 
@@ -252,7 +252,7 @@ export function DestinationModal({
                     >
                       <Geographies geography="https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json">
                         {({ geographies }) =>
-                          geographies.map((geo: any) => (
+                          geographies.map((geo: { rsmKey: string }) => (
                             <Geography
                               key={geo.rsmKey}
                               geography={geo}
@@ -323,6 +323,14 @@ export function DestinationModal({
                   >
                     {destination.flight_time}
                   </p>
+
+                  {destination.departure_airport_code &&
+                    destination.destination_airport_code && (
+                      <p className="mt-3 text-neutral-400">
+                        {destination.departure_airport_code} {" -> "}
+                        {destination.destination_airport_code}
+                      </p>
+                    )}
                 </div>
 
                 {/* BUDGET */}
@@ -338,6 +346,12 @@ export function DestinationModal({
                   >
                     €{destination.estimated_budget}
                   </p>
+
+                  {destination.flight_budget && (
+                    <p className="mt-3 text-green-300">
+                      Includes est. €{destination.flight_budget} flights
+                    </p>
+                  )}
                 </div>
 
                 {/* BUTTON */}

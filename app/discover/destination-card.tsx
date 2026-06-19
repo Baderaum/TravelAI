@@ -40,6 +40,12 @@ export function DestinationCard({
         </p>
 
         <div className="mt-5 flex flex-wrap gap-2">
+          {destination.flight_budget && (
+            <div className="rounded-full border border-green-500/20 bg-green-500/10 px-3 py-1 text-sm text-green-300">
+              Est. flight EUR {destination.flight_budget}
+            </div>
+          )}
+
           {destination.vibes?.map(
             (vibe, vibeIndex) => (
               <div

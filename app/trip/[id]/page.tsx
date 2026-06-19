@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   ArrowLeft,
   Plane,
-  CalendarDays,
   Wallet,
   MapPin,
   Users,
@@ -21,6 +20,8 @@ import InviteMember from "@/components/trip/invite-member";
 import TripMap from "@/components/trip/trip-map";
 import TripDates from "@/components/trip/trip-dates";
 import TripSettings from "@/components/trip/trip-settings";
+import CollapsibleSection from "@/components/ui/collapsible-section";
+import PlanningCenter from "@/components/trip/planning-center";
 
 export default async function TripPage({
   params,
@@ -85,8 +86,10 @@ export default async function TripPage({
 
   const data = destination?.data || {};
 
-  const coordinates =
-    data.coordinates;
+  const flightBudget =
+    typeof data.flight_budget === "number"
+      ? data.flight_budget
+      : null;
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -181,6 +184,11 @@ export default async function TripPage({
                 ? `€${data.estimated_budget}`
                 : "Not set"}
             </p>
+            {flightBudget !== null && (
+              <p className="mt-2 text-sm text-green-300">
+                Includes est. EUR {flightBudget} flights
+              </p>
+            )}
           </div>
 
           <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
@@ -214,61 +222,22 @@ export default async function TripPage({
           <div className="space-y-8">
 
             {/* NEXT ACTIONS */}
-            <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-8">
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-3xl font-semibold">
-                    Planning Center
-                  </h2>
-
-                  <p className="mt-2 text-neutral-400">
-                    Build the trip step by step with your group.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-7 grid gap-4 md:grid-cols-3">
-
-                <div className="group rounded-[28px] border border-white/10 bg-black/40 p-6 transition hover:border-white/20 hover:bg-white/10">
-                  <Plane className="h-6 w-6 text-neutral-300" />
-
-                  <h3 className="mt-5 text-2xl font-semibold">
-                    Flights
-                  </h3>
-
-                  <p className="mt-3 text-neutral-400">
-                    Compare routes, prices and arrival times.
-                  </p>
-                </div>
-
-                <div className="group rounded-[28px] border border-white/10 bg-black/40 p-6 transition hover:border-white/20 hover:bg-white/10">
-                  <CalendarDays className="h-6 w-6 text-neutral-300" />
-
-                  <h3 className="mt-5 text-2xl font-semibold">
-                    Itinerary
-                  </h3>
-
-                  <p className="mt-3 text-neutral-400">
-                    Turn accepted activities into daily plans.
-                  </p>
-                </div>
-
-                <div className="group rounded-[28px] border border-white/10 bg-black/40 p-6 transition hover:border-white/20 hover:bg-white/10">
-                  <Wallet className="h-6 w-6 text-neutral-300" />
-
-                  <h3 className="mt-5 text-2xl font-semibold">
-                    Budget
-                  </h3>
-
-                  <p className="mt-3 text-neutral-400">
-                    Track costs and split expenses fairly.
-                  </p>
-                </div>
-
-              </div>
-              
-            </div>
+            <PlanningCenter
+              key={[
+                trip.start_date,
+                trip.end_date,
+                data.departure_airport_code,
+                data.destination_airport_code,
+              ].join("-")}
+              tripId={id}
+              destination={trip.destination}
+              departureLocation={data.departure_location}
+              departureAirportCode={data.departure_airport_code}
+              destinationAirportCode={data.destination_airport_code}
+              startDate={trip.start_date}
+              endDate={trip.end_date}
+              initialFlightBudget={flightBudget}
+            />
 
             {/* ACTIVITIES */}
             <TripActivities
@@ -278,17 +247,12 @@ export default async function TripPage({
             />
 
             {/* SUMMARY */}
-            <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-8">
+            <CollapsibleSection
+              title="Why is this a match"
+              icon={<Sparkles className="h-6 w-6 text-green-400" />}
+            >
 
-              <div className="flex items-center gap-3">
-                <Sparkles className="h-6 w-6 text-green-400" />
-
-                <h2 className="text-3xl font-semibold">
-                  Why is this a match
-                </h2>
-              </div>
-
-              <p className="mt-6 text-lg leading-8 text-neutral-300">
+              <p className="text-lg leading-8 text-neutral-300">
                 {destination?.summary ||
                   "Your collaborative trip workspace is ready. Start planning activities, flights, expenses and your daily itinerary together."}
               </p>
@@ -310,14 +274,13 @@ export default async function TripPage({
                   ))}
                 </div>
               )}
-            </div>
+            </CollapsibleSection>
           </div>
 
           {/* RIGHT */}
           <aside className="space-y-6">
 
             <TripDates
-              tripId={id}
               startDate={trip.start_date}
               endDate={trip.end_date}
             />
