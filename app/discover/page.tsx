@@ -26,6 +26,7 @@ export type Destination = {
     title: string;
     description: string;
     image: string;
+    estimated_cost?: number;
   }[];
   subtitle: string;
   coordinates: {

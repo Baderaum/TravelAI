@@ -11,6 +11,7 @@ export async function POST(request: Request) {
     description,
     startTime,
     endTime,
+    estimatedCost,
   } = await request.json();
 
   const { error } = await supabase
@@ -20,6 +21,10 @@ export async function POST(request: Request) {
       description,
       start_time: startTime || null,
       end_time: endTime || null,
+      estimated_cost:
+        typeof estimatedCost === "number" && estimatedCost >= 0
+          ? estimatedCost
+          : null,
     })
     .eq("id", activityId);
 

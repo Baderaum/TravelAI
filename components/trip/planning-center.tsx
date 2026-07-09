@@ -1,9 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, ExternalLink, Plane, Wallet } from "lucide-react";
 
 import CollapsibleSection from "@/components/ui/collapsible-section";
+import ItineraryDialog, {
+  type ItineraryActivity,
+} from "@/components/trip/itinerary-dialog";
+import BudgetDialog from "@/components/trip/budget-dialog";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +24,9 @@ type PlanningCenterProps = {
   startDate?: string | null;
   endDate?: string | null;
   initialFlightBudget?: number | null;
+  hotelBudgetAmount?: number | null;
+  hotelBudgetMode?: "total" | "per_night" | null;
+  activities: ItineraryActivity[];
 };
 
 function normalizeAirportCode(value: string) {
@@ -92,8 +99,14 @@ export default function PlanningCenter({
   startDate,
   endDate,
   initialFlightBudget,
+  hotelBudgetAmount,
+  hotelBudgetMode,
+  activities,
 }: PlanningCenterProps) {
   const [flightOpen, setFlightOpen] = useState(false);
+  const [itineraryOpen, setItineraryOpen] = useState(false);
+  const [budgetOpen, setBudgetOpen] = useState(false);
+  const [planningActivities, setPlanningActivities] = useState(activities);
   const [origin, setOrigin] = useState(
     departureAirportCode || ""
   );
@@ -109,6 +122,25 @@ export default function PlanningCenter({
   const [saving, setSaving] = useState(false);
   const [savedBudget, setSavedBudget] =
     useState(initialFlightBudget || null);
+
+  useEffect(() => {
+    function handleActivitiesUpdated(event: Event) {
+      const activitiesUpdatedEvent = event as CustomEvent<ItineraryActivity[]>;
+      setPlanningActivities(activitiesUpdatedEvent.detail);
+    }
+
+    window.addEventListener(
+      "travelai:activities-updated",
+      handleActivitiesUpdated
+    );
+
+    return () => {
+      window.removeEventListener(
+        "travelai:activities-updated",
+        handleActivitiesUpdated
+      );
+    };
+  }, []);
 
   const skyscannerUrl = useMemo(
     () =>
@@ -170,7 +202,7 @@ export default function PlanningCenter({
         <button
           type="button"
           onClick={() => setFlightOpen(true)}
-          className="group rounded-[28px] border border-white/10 bg-black/40 p-6 text-left transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/10"
+          className="group flex h-full flex-col items-start rounded-[28px] border border-white/10 bg-black/40 p-6 text-left transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/10"
         >
           <Plane className="h-6 w-6 text-neutral-300" />
 
@@ -183,13 +215,17 @@ export default function PlanningCenter({
           </p>
 
           {savedBudget !== null && (
-            <p className="mt-5 rounded-full border border-green-500/20 bg-green-500/10 px-3 py-2 text-sm text-green-300">
+            <p className="mt-auto rounded-full border border-green-500/20 bg-green-500/10 px-3 py-2 text-sm text-green-300">
               Flight estimate: EUR {savedBudget}
             </p>
           )}
         </button>
 
-        <div className="group rounded-[28px] border border-white/10 bg-black/40 p-6 transition hover:border-white/20 hover:bg-white/10">
+        <button
+          type="button"
+          onClick={() => setItineraryOpen(true)}
+          className="group flex h-full flex-col items-start rounded-[28px] border border-white/10 bg-black/40 p-6 text-left transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/10"
+        >
           <CalendarDays className="h-6 w-6 text-neutral-300" />
 
           <h3 className="mt-5 text-2xl font-semibold">
@@ -199,9 +235,13 @@ export default function PlanningCenter({
           <p className="mt-3 text-neutral-400">
             Turn accepted activities into daily plans.
           </p>
-        </div>
+        </button>
 
-        <div className="group rounded-[28px] border border-white/10 bg-black/40 p-6 transition hover:border-white/20 hover:bg-white/10">
+        <button
+          type="button"
+          onClick={() => setBudgetOpen(true)}
+          className="group flex h-full flex-col items-start rounded-[28px] border border-white/10 bg-black/40 p-6 text-left transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/10"
+        >
           <Wallet className="h-6 w-6 text-neutral-300" />
 
           <h3 className="mt-5 text-2xl font-semibold">
@@ -211,7 +251,7 @@ export default function PlanningCenter({
           <p className="mt-3 text-neutral-400">
             Track costs and split expenses fairly.
           </p>
-        </div>
+        </button>
       </CollapsibleSection>
 
       <Dialog
@@ -344,6 +384,26 @@ export default function PlanningCenter({
           </div>
         </DialogContent>
       </Dialog>
+
+      <ItineraryDialog
+        open={itineraryOpen}
+        onOpenChange={setItineraryOpen}
+        destination={destination}
+        startDate={startDate}
+        endDate={endDate}
+        activities={planningActivities}
+      />
+
+      <BudgetDialog
+        open={budgetOpen}
+        onOpenChange={setBudgetOpen}
+        startDate={startDate}
+        endDate={endDate}
+        flightBudget={savedBudget}
+        hotelBudgetAmount={hotelBudgetAmount}
+        hotelBudgetMode={hotelBudgetMode}
+        activities={planningActivities}
+      />
     </>
   );
 }

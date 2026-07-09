@@ -6,6 +6,7 @@ type Activity = {
   title: string;
   description: string;
   image: string;
+  estimated_cost?: number | null;
 };
 
 type Props = {

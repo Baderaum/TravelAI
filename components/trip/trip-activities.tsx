@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 import GenerateActivitiesButton from "./generate-activities-button";
 
@@ -13,10 +14,14 @@ type Activity = {
   id?: string;
   title: string;
   description: string;
-  image?: string;
+  image?: string | null;
   status?: string;
   start_time?: string | null;
   end_time?: string | null;
+  location?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  estimated_cost?: number | null;
 };
 
 type Vote = {
@@ -61,6 +66,24 @@ export default function TripActivities({
       deleteLoading,
       setDeleteLoading,
     ] = useState(false);
+
+    const [
+      actionLoading,
+      setActionLoading,
+    ] = useState(false);
+
+    const [
+      actionsOpen,
+      setActionsOpen,
+    ] = useState(false);
+
+    useEffect(() => {
+      window.dispatchEvent(
+        new CustomEvent("travelai:activities-updated", {
+          detail: localActivities,
+        })
+      );
+    }, [localActivities]);
 
     async function deleteActivity(
     activityId: string
@@ -180,14 +203,148 @@ export default function TripActivities({
     );
   }
 
+  function sortActivitiesByTime() {
+    setLocalActivities((prev) =>
+      [...prev].sort((a, b) => {
+        if (!a.start_time && !b.start_time) return 0;
+        if (!a.start_time) return 1;
+        if (!b.start_time) return -1;
+
+        return (
+          new Date(a.start_time).getTime() -
+          new Date(b.start_time).getTime()
+        );
+      })
+    );
+  }
+
+  async function planActivityTiming() {
+    setActionLoading(true);
+
+    try {
+      const res = await fetch("/api/plan-activity-timing", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tripId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data.error || "Failed to plan timing"
+        );
+      }
+
+      const plannedActivities =
+        data.activities as {
+          activityId: string;
+          startTime: string;
+          endTime: string;
+        }[];
+
+      setLocalActivities((prev) =>
+        prev.map((activity) => {
+          const planned =
+            plannedActivities.find(
+              (item) =>
+                item.activityId === activity.id
+            );
+
+          if (!planned) return activity;
+
+          return {
+            ...activity,
+            start_time: planned.startTime,
+            end_time: planned.endTime,
+          };
+        })
+      );
+    } catch (error) {
+      console.error(error);
+      window.alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to plan activity timing"
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  }
+
+  async function handleActivityAction(
+    value: string
+  ) {
+    if (!value) return;
+
+    if (value === "plan-timing") {
+      await planActivityTiming();
+      return;
+    }
+
+    if (value === "sort-time") {
+      sortActivitiesByTime();
+    }
+  }
+
   return (
     <CollapsibleSection
       title="Activities"
       actions={(
-        <GenerateActivitiesButton
-          tripId={tripId}
-          onGenerated={setSuggestions}
-        />
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative">
+            <button
+              type="button"
+              disabled={actionLoading}
+              onClick={() =>
+                setActionsOpen((value) => !value)
+              }
+              className="flex h-12 min-w-[150px] items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm font-medium text-white outline-none transition hover:bg-white/10 disabled:opacity-50"
+            >
+              {actionLoading ? "Planning..." : "Actions"}
+              <ChevronDown
+                className={`h-4 w-4 transition ${
+                  actionsOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {actionsOpen && (
+              <div className="absolute right-0 top-14 z-30 w-56 rounded-3xl border border-white/10 bg-black p-2 shadow-[0_24px_80px_rgba(0,0,0,0.65)]">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setActionsOpen(false);
+                    await handleActivityAction("plan-timing");
+                  }}
+                  className="w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-green-300 transition hover:bg-green-500/10"
+                >
+                  Plan timing
+                </button>
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setActionsOpen(false);
+                    await handleActivityAction("sort-time");
+                  }}
+                  className="mt-1 w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-green-300 transition hover:bg-green-500/10"
+                >
+                  Sort by time
+                </button>
+              </div>
+            )}
+          </div>
+
+          <GenerateActivitiesButton
+            tripId={tripId}
+            onGenerated={setSuggestions}
+          />
+        </div>
       )}
       className="rounded-[32px] bg-white/5"
       contentClassName="space-y-5"
@@ -423,6 +580,7 @@ export default function TripActivities({
         ))}
 
       <ActivityModal
+        key={selectedActivity?.id || "empty"}
         activity={selectedActivity}
         open={!!selectedActivity}
         onOpenChange={() =>

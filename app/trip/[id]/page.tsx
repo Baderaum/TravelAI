@@ -152,6 +152,8 @@ export default async function TripPage({
             description={trip.description}
             startDate={trip.start_date}
             endDate={trip.end_date}
+            hotelBudgetAmount={trip.hotel_budget_amount}
+            hotelBudgetMode={trip.hotel_budget_mode}
             members={members || []}
           />
         </div>
@@ -237,6 +239,9 @@ export default async function TripPage({
               startDate={trip.start_date}
               endDate={trip.end_date}
               initialFlightBudget={flightBudget}
+              hotelBudgetAmount={trip.hotel_budget_amount}
+              hotelBudgetMode={trip.hotel_budget_mode}
+              activities={activities || []}
             />
 
             {/* ACTIVITIES */}

@@ -12,6 +12,8 @@ export async function POST(request: Request) {
     description,
     startDate,
     endDate,
+    hotelBudgetAmount,
+    hotelBudgetMode,
   } = body;
 
   const updates: {
@@ -19,6 +21,8 @@ export async function POST(request: Request) {
     description?: string | null;
     start_date?: string | null;
     end_date?: string | null;
+    hotel_budget_amount?: number | null;
+    hotel_budget_mode?: "total" | "per_night";
   } = {};
 
   if ("title" in body) {
@@ -35,6 +39,18 @@ export async function POST(request: Request) {
 
   if ("endDate" in body) {
     updates.end_date = endDate || null;
+  }
+
+  if ("hotelBudgetAmount" in body) {
+    updates.hotel_budget_amount =
+      typeof hotelBudgetAmount === "number" && hotelBudgetAmount >= 0
+        ? hotelBudgetAmount
+        : null;
+  }
+
+  if ("hotelBudgetMode" in body) {
+    updates.hotel_budget_mode =
+      hotelBudgetMode === "per_night" ? "per_night" : "total";
   }
 
   const { error } = await supabase

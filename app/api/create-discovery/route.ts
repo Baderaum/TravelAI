@@ -76,6 +76,8 @@ The maximum amount of destinations is 3, // IGNORE THIS PART: "but if it is 3 or
 
 The activities should be at least 3 in amount. Look for things to do only at that locations and also "going to beach" and basic stuff
 
+Every activity needs a realistic estimated_cost per person in the selected currency. Use 0 for genuinely free activities.
+
 The flight_time has to be the flight time from the departure airport to the destination airport and ONLY if there is a necessary ferry or bus ride to take, then say it inside flightime too (like "3,5h + 1,5h ferry")
 
 The flight_budget must be a realistic estimated round-trip economy flight price per person in the selected currency.
@@ -114,6 +116,7 @@ JSON format:
         {
           "title": "Boat Tours",
           "description": "Explore hidden beaches and crystal-clear waters.",
+          "estimated_cost": 45,
           "image": ""
         }
       ]
