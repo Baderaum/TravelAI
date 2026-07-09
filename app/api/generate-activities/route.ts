@@ -69,6 +69,7 @@ export async function POST(
 
     const prompt = `
 Generate 5 unique travel activities for this destination.
+Include a realistic estimated cost per person in EUR. Use 0 for free activities.
 
 Destination:
 ${trip.destination}
@@ -88,7 +89,8 @@ Return JSON only.
   "activities": [
     {
       "title": "",
-      "description": ""
+      "description": "",
+      "estimated_cost": 25
     }
   ]
 }

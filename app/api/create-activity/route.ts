@@ -33,6 +33,11 @@ export async function POST(
 
         image:
           activity.image,
+
+        estimated_cost:
+          typeof activity.estimated_cost === "number"
+            ? Math.max(0, activity.estimated_cost)
+            : null,
       });
 
     if (error) {

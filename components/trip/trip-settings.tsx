@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Settings, X, Users, CalendarDays, Type, FileText } from "lucide-react";
+import { BedDouble, Settings, X, Users, CalendarDays, Type, FileText } from "lucide-react";
 
 type TripSettingsProps = {
   tripId: string;
@@ -9,8 +9,29 @@ type TripSettingsProps = {
   description?: string | null;
   startDate?: string | null;
   endDate?: string | null;
-  members: any[];
+  hotelBudgetAmount?: number | null;
+  hotelBudgetMode?: "total" | "per_night" | null;
+  members: TripMember[];
 };
+
+type TripMember = {
+  user_id: string;
+  role: string;
+  profiles?: TripMemberProfile | TripMemberProfile[] | null;
+};
+
+type TripMemberProfile = {
+    username?: string | null;
+    email?: string | null;
+};
+
+function getMemberLabel(member: TripMember) {
+  const profile = Array.isArray(member.profiles)
+    ? member.profiles[0]
+    : member.profiles;
+
+  return profile?.username || profile?.email || "Unknown user";
+}
 
 export default function TripSettings({
   tripId,
@@ -18,6 +39,8 @@ export default function TripSettings({
   description,
   startDate,
   endDate,
+  hotelBudgetAmount,
+  hotelBudgetMode,
   members,
 }: TripSettingsProps) {
     const [open, setOpen] = useState(false);
@@ -25,6 +48,12 @@ export default function TripSettings({
     const [tripDescription, setTripDescription] = useState(description || "");
     const [tripStart, setTripStart] = useState(startDate || "");
     const [tripEnd, setTripEnd] = useState(endDate || "");
+    const [hotelAmount, setHotelAmount] = useState(
+      hotelBudgetAmount != null ? String(hotelBudgetAmount) : ""
+    );
+    const [hotelMode, setHotelMode] = useState<"total" | "per_night">(
+      hotelBudgetMode === "per_night" ? "per_night" : "total"
+    );
 
     const [saving, setSaving] = useState(false);
 
@@ -43,6 +72,11 @@ export default function TripSettings({
                     description: tripDescription,
                     startDate: tripStart,
                     endDate: tripEnd,
+                    hotelBudgetAmount:
+                      hotelAmount === ""
+                        ? null
+                        : Number(hotelAmount.replace(",", ".")),
+                    hotelBudgetMode: hotelMode,
                 }),
                 });
 
@@ -68,8 +102,8 @@ export default function TripSettings({
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-6 backdrop-blur-sm">
-          <div className="w-full max-w-2xl rounded-[36px] border border-white/10 bg-[#0b0b0b] p-8 text-white shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm sm:p-6">
+          <div className="max-h-[calc(100dvh-2rem)] w-full max-w-2xl overflow-y-auto rounded-[36px] border border-white/10 bg-[#0b0b0b] p-6 text-white shadow-2xl scrollbar-thin scrollbar-thumb-white/20 sm:max-h-[calc(100dvh-3rem)] sm:p-8">
             <div className="flex items-start justify-between gap-6">
               <div>
                 <h2 className="text-3xl font-semibold">Trip Settings</h2>
@@ -127,6 +161,47 @@ export default function TripSettings({
                 </div>
               </div>
 
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
+                <div className="flex items-center gap-2">
+                  <BedDouble className="h-4 w-4 text-neutral-400" />
+                  <p className="font-medium">Hotel Budget</p>
+                </div>
+
+                <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_1fr]">
+                  <label>
+                    <span className="text-sm text-neutral-400">Cost type</span>
+                    <select
+                      value={hotelMode}
+                      onChange={(event) =>
+                        setHotelMode(event.target.value as "total" | "per_night")
+                      }
+                      className="mt-2 w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none focus:border-white/30"
+                    >
+                      <option value="total">Total cost</option>
+                      <option value="per_night">Cost per night</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    <span className="text-sm text-neutral-400">
+                      Amount per person
+                    </span>
+                    <div className="relative mt-2">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500">
+                        EUR
+                      </span>
+                      <input
+                        inputMode="decimal"
+                        value={hotelAmount}
+                        onChange={(event) => setHotelAmount(event.target.value)}
+                        placeholder="0"
+                        className="w-full rounded-2xl border border-white/10 bg-black py-3 pl-14 pr-4 outline-none transition focus:border-white/30"
+                      />
+                    </div>
+                  </label>
+                </div>
+              </div>
+
               <div>
                 <label className="mb-2 flex items-center gap-2 text-sm text-neutral-400">
                   <FileText className="h-4 w-4" />
@@ -149,15 +224,13 @@ export default function TripSettings({
 
                 <div className="space-y-3">
                   {members.length > 0 ? (
-                    members.map((member: any) => (
+                    members.map((member) => (
                       <div
                         key={member.user_id}
                         className="flex items-center justify-between rounded-xl bg-black/40 px-4 py-3"
                       >
                         <span>
-                          {member.profiles?.username ||
-                            member.profiles?.email ||
-                            "Unknown user"}
+                          {getMemberLabel(member)}
                         </span>
 
                         <span className="text-sm capitalize text-neutral-500">

@@ -5,8 +5,11 @@ type Props = {
   groupSize: string;
   setGroupSize: (value: string) => void;
 
-  departure: string;
-  setDeparture: (value: string) => void;
+  homeCity: string;
+  setHomeCity: (value: string) => void;
+
+  homeCountry: string;
+  setHomeCountry: (value: string) => void;
 
   temperature: string;
   setTemperature: (value: string) => void;
@@ -67,6 +70,29 @@ const hateOptions = [
   "Party Destinations",
 ];
 
+const countryOptions = [
+  "Germany",
+  "Austria",
+  "Switzerland",
+  "Netherlands",
+  "Belgium",
+  "France",
+  "Italy",
+  "Spain",
+  "Portugal",
+  "United Kingdom",
+  "Ireland",
+  "Denmark",
+  "Sweden",
+  "Norway",
+  "Finland",
+  "Poland",
+  "Czech Republic",
+  "United States",
+  "Canada",
+  "Australia",
+];
+
 export function FilterBar({
   loading,
   generateTrip,
@@ -74,8 +100,11 @@ export function FilterBar({
   groupSize,
   setGroupSize,
 
-  departure,
-  setDeparture,
+  homeCity,
+  setHomeCity,
+
+  homeCountry,
+  setHomeCountry,
 
   temperature,
   setTemperature,
@@ -159,7 +188,7 @@ export function FilterBar({
             Your Group
           </h2>
 
-          <div className="mt-6 grid grid-cols-2 gap-4">
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
 
             <div>
               <p className="mb-3 text-sm text-neutral-400">
@@ -182,15 +211,35 @@ export function FilterBar({
 
             <div>
               <p className="mb-3 text-sm text-neutral-400">
-                Departure
+                Home country
+              </p>
+
+              <select
+                value={homeCountry}
+                onChange={(e) =>
+                  setHomeCountry(e.target.value)
+                }
+                className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
+              >
+                {countryOptions.map((country) => (
+                  <option key={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <p className="mb-3 text-sm text-neutral-400">
+                Home city
               </p>
 
               <input
-                value={departure}
+                value={homeCity}
                 onChange={(e) =>
-                  setDeparture(e.target.value)
+                  setHomeCity(e.target.value)
                 }
-                placeholder="Germany"
+                placeholder="Cologne"
                 className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
               />
             </div>
@@ -210,7 +259,7 @@ export function FilterBar({
                 <option>Within 2h</option>
                 <option>Same continent</option>
                 <option>International</option>
-                <option>Doesn't matter</option>
+                <option>Doesn&apos;t matter</option>
               </select>
             </div>
 
@@ -259,7 +308,7 @@ export function FilterBar({
                 <option>Warm</option>
                 <option>Cold</option>
                 <option>Mixed</option>
-                <option>Doesn't matter</option>
+                <option>Doesn&apos;t matter</option>
               </select>
             </div>
 

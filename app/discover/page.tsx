@@ -12,6 +12,10 @@ export type Destination = {
   summary: string;
   match_score: number;
   estimated_budget: number;
+  flight_budget: number;
+  departure_location: string;
+  departure_airport_code: string;
+  destination_airport_code: string;
   best_for: string;
   vibes: string[];
   weather: string;
@@ -22,6 +26,7 @@ export type Destination = {
     title: string;
     description: string;
     image: string;
+    estimated_cost?: number;
   }[];
   subtitle: string;
   coordinates: {
@@ -34,7 +39,8 @@ export default function DiscoverPage() {
   const [loading, setLoading] = useState(false);
 
   const [groupSize, setGroupSize] = useState("3-5");
-  const [departure, setDeparture] = useState("Germany");
+  const [homeCity, setHomeCity] = useState("");
+  const [homeCountry, setHomeCountry] = useState("Germany");
   const [temperature, setTemperature] = useState("Warm");
   const [flightTime, setFlightTime] =
     useState("Same continent");
@@ -95,13 +101,18 @@ export default function DiscoverPage() {
         },
         body: JSON.stringify({
           groupSize,
-          departure,
+          departure: homeCountry,
           temperature,
           distance: flightTime,
           tripType,
           vibes: selectedVibes,
           extraInfo,
           budgetAmount,
+          homeCity,
+          homeCountry,
+          homeLocation: [homeCity, homeCountry]
+            .filter(Boolean)
+            .join(", "),
           pace,
           accommodation,
           travelPersonality,
@@ -129,8 +140,10 @@ export default function DiscoverPage() {
           loading={loading}
           groupSize={groupSize}
           setGroupSize={setGroupSize}
-          departure={departure}
-          setDeparture={setDeparture}
+          homeCity={homeCity}
+          setHomeCity={setHomeCity}
+          homeCountry={homeCountry}
+          setHomeCountry={setHomeCountry}
           temperature={temperature}
           setTemperature={setTemperature}
           flightTime={flightTime}

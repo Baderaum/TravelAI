@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Settings, X } from "lucide-react";
+import { useState } from "react";
+import { Sparkles, X } from "lucide-react";
 import TripMap from "@/components/trip/trip-map";
 
 import {
@@ -21,6 +21,7 @@ type Activity = {
   end_time?: string | null;
   lat?: number | null;
   lng?: number | null;    
+  estimated_cost?: number | null;
 };
 
 type Props = {
@@ -36,12 +37,7 @@ type Props = {
 
   onUpdateActivity?: (
     activityId: string,
-    updates: {
-      title: string;
-      description: string;
-      start_time: string | null;
-      end_time: string | null;
-    }
+    updates: Partial<Activity>
   ) => void;
 };
 
@@ -66,45 +62,34 @@ export default function ActivityModal({
     useState(false);
 
   const [title, setTitle] =
-    useState("");
+    useState(activity?.title || "");
 
   const [description, setDescription] =
-    useState("");
+    useState(activity?.description || "");
 
   const [startTime, setStartTime] =
-    useState("");
-
-  const [endTime, setEndTime] =
-    useState("");
-
-  const [imageOpen, setImageOpen] =
-    useState(false);
-
-  useEffect(() => {
-    if (!activity) return;
-
-    setEditing(false);
-
-    setTitle(
-      activity.title || ""
-    );
-
-    setDescription(
-      activity.description || ""
-    );
-
-    setStartTime(
-      activity.start_time
+    useState(
+      activity?.start_time
         ? activity.start_time.slice(0, 16)
         : ""
     );
 
-    setEndTime(
-      activity.end_time
+  const [endTime, setEndTime] =
+    useState(
+      activity?.end_time
         ? activity.end_time.slice(0, 16)
         : ""
     );
-  }, [activity]);
+
+  const [estimatedCost, setEstimatedCost] = useState(
+    activity?.estimated_cost != null ? String(activity.estimated_cost) : ""
+  );
+
+  const [imageOpen, setImageOpen] =
+    useState(false);
+
+  const [detailsLoading, setDetailsLoading] =
+    useState(false);
 
   if (!activity) return null;
 
@@ -122,6 +107,10 @@ export default function ActivityModal({
         description,
         startTime,
         endTime,
+        estimatedCost:
+          estimatedCost === ""
+            ? null
+            : Number(estimatedCost.replace(",", ".")),
       }),
     });
 
@@ -136,9 +125,56 @@ export default function ActivityModal({
     description,
     start_time: startTime || null,
     end_time: endTime || null,
+    estimated_cost:
+      estimatedCost === ""
+        ? null
+        : Number(estimatedCost.replace(",", ".")),
     });
 
     setEditing(false);
+  }
+
+  async function enrichDetails() {
+    if (!activity?.id) return;
+
+    setDetailsLoading(true);
+
+    try {
+      const res = await fetch("/api/enrich-activity-details", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          activityId: activity.id,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data.error || "Failed to enrich activity"
+        );
+      }
+
+      const updates =
+        data.activity as Partial<Activity>;
+
+      if (typeof updates.description === "string") {
+        setDescription(updates.description);
+      }
+
+      if (typeof updates.estimated_cost === "number") {
+        setEstimatedCost(String(updates.estimated_cost));
+      }
+
+      onUpdateActivity?.(activity.id, updates);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDetailsLoading(false);
+    }
   }
 
   return (
@@ -309,6 +345,45 @@ export default function ActivityModal({
                   </div>
                 </div>
               </div>
+
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <h3 className="text-2xl font-semibold">Budget</h3>
+                <p className="mt-2 text-sm text-neutral-500">
+                  Estimated cost per person
+                </p>
+
+                {editing ? (
+                  <div className="relative mt-4">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-neutral-500">
+                      EUR
+                    </span>
+                    <input
+                      inputMode="decimal"
+                      value={estimatedCost}
+                      onChange={(event) => setEstimatedCost(event.target.value)}
+                      placeholder="0"
+                      className="w-full rounded-2xl border border-white/10 bg-black py-3 pl-14 pr-4 text-white outline-none"
+                    />
+                  </div>
+                ) : (
+                  <p className="mt-4 text-2xl font-semibold text-green-300">
+                    {activity.estimated_cost != null
+                      ? `EUR ${activity.estimated_cost}`
+                      : "Not estimated"}
+                  </p>
+                )}
+              </div>
+
+              <button
+                onClick={enrichDetails}
+                disabled={detailsLoading}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-green-500/20 bg-green-500/10 px-5 py-3 font-medium text-green-300 transition hover:bg-green-500/20 disabled:opacity-50"
+              >
+                <Sparkles className="h-4 w-4" />
+                {detailsLoading
+                  ? "Adding details..."
+                  : "Give more details"}
+              </button>
 
               {activity.id && (
                 <button

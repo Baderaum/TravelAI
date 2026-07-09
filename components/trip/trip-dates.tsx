@@ -1,84 +1,52 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { CalendarDays } from "lucide-react";
 
 type Props = {
-  tripId: string;
   startDate?: string | null;
   endDate?: string | null;
 };
 
+function formatDate(value?: string | null) {
+  if (!value) return "Not set";
+
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date(`${value.slice(0, 10)}T00:00:00`));
+}
+
 export default function TripDates({
-  tripId,
   startDate,
   endDate,
 }: Props) {
-  const router = useRouter();
-
-  const [start, setStart] = useState(startDate || "");
-  const [end, setEnd] = useState(endDate || "");
-  const [saving, setSaving] = useState(false);
-
-  async function saveDates() {
-    setSaving(true);
-
-    await fetch("/api/update-trip-dates", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        tripId,
-        startDate: start,
-        endDate: end,
-      }),
-    });
-
-    setSaving(false);
-    router.refresh();
-  }
-
   return (
-    <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-6">
-      <h3 className="text-2xl font-semibold">
-        Trip Dates
-      </h3>
+    <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+      <div className="flex items-center gap-3">
+        <CalendarDays className="h-5 w-5 text-green-400" />
 
-      <div className="mt-5 space-y-4">
-        <div>
-          <p className="mb-2 text-sm text-neutral-500">
-            Start date
+        <h3 className="text-xl font-semibold">
+          Trip Dates
+        </h3>
+      </div>
+
+      <div className="mt-5 grid gap-3">
+        <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3">
+          <p className="text-xs uppercase tracking-wide text-neutral-500">
+            Start
           </p>
-
-          <input
-            type="date"
-            value={start}
-            onChange={(e) => setStart(e.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-          />
+          <p className="mt-1 text-lg font-medium">
+            {formatDate(startDate)}
+          </p>
         </div>
 
-        <div>
-          <p className="mb-2 text-sm text-neutral-500">
-            End date
+        <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3">
+          <p className="text-xs uppercase tracking-wide text-neutral-500">
+            End
           </p>
-
-          <input
-            type="date"
-            value={end}
-            onChange={(e) => setEnd(e.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-          />
+          <p className="mt-1 text-lg font-medium">
+            {formatDate(endDate)}
+          </p>
         </div>
-
-        <button
-          onClick={saveDates}
-          disabled={saving}
-          className="w-full rounded-2xl bg-white px-5 py-3 font-medium text-black transition hover:bg-neutral-200 disabled:opacity-50"
-        >
-          {saving ? "Saving..." : "Save Dates"}
-        </button>
       </div>
     </div>
   );
