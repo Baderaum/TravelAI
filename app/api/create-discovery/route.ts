@@ -10,14 +10,15 @@ export async function POST(req: Request) {
       groupSize,
       departure,
       temperature,
+      targetCountry,
       distance,
       tripType,
       vibes,
       extraInfo,
       budgetAmount,
+      startDate,
+      endDate,
       homeLocation,
-      pace,
-      accommodation,
       travelPersonality,
       avoidTourist,
       hates,
@@ -30,12 +31,13 @@ Group Size: ${groupSize}
 Age (younger people are more active): ${ageGroup}
 Home Location / Departure Area: ${homeLocation || departure}
 Preferred Temperature: ${temperature}
+Target Country: ${targetCountry || "No specific target country"}
 Distance Preference: ${distance}
 Trip Type: ${tripType}
 Total Budget Per Person Including Estimated Round-Trip Flight: ${currency}${budgetAmount}
+Trip Start Date: ${startDate || "Not provided"}
+Trip End Date: ${endDate || "Not provided"}
 Travel Personality: ${travelPersonality}
-Travel Pace: ${pace}
-Accommodation Style: ${accommodation}
 Avoid Tourist Traps: ${avoidTourist ? "Yes" : "No"}
 
 Things To Avoid:
@@ -59,9 +61,11 @@ You are an elite AI travel recommendation engine.
 
 Your task:
 - Recommend destinations matching the user's preferences
+- If the user provided a Target Country, recommend ONLY destinations located in that country
 - Choose the most likely nearby departure airport from the user's home location
 - Choose the most useful destination airport for every destination
 - Estimate realistic round-trip flight budget per person from the departure airport to the destination airport
+- Use the provided trip dates for seasonal fit, activity timing assumptions, and budget realism
 - Include that flight estimate inside estimated_budget, so estimated_budget feels like a complete trip budget
 - Consider travel distance carefully
 - Match the group's vibe and budget
@@ -149,6 +153,8 @@ JSON format:
     }
 
     for (const destination of parsed.destinations) {
+      destination.start_date = startDate || null;
+      destination.end_date = endDate || null;
 
       destination.image = await getDestinationImage(
         `${destination.name} travel`

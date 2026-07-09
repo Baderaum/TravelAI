@@ -4,11 +4,13 @@ import { DestinationCard } from "./destination-card";
 type Props = {
   results: Destination[];
   onSelect: (destination: Destination) => void;
+  isFreePlan: boolean;
 };
 
 export function ResultsGrid({
   results,
   onSelect,
+  isFreePlan,
 }: Props) {
   if (results.length === 0) return null;
 
@@ -18,6 +20,7 @@ export function ResultsGrid({
         <DestinationCard
           key={index}
           destination={destination}
+          isFreePlan={isFreePlan}
           onClick={() => onSelect(destination)}
         />
       ))}

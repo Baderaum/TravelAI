@@ -4,10 +4,12 @@ import { usePathname } from "next/navigation";
 
 import {
   Compass,
+  Home,
   Map,
   Calendar,
-  Bookmark,
-  Settings,
+  Archive,
+  CreditCard,
+  Lock,
 } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
@@ -32,17 +34,21 @@ const items = [
     icon: Calendar,
   },
   {
-    label: "Saved",
-    href: "/saved",
-    icon: Bookmark,
+    label: "Archive",
+    href: "/archive",
+    icon: Archive,
   },
 ];
+
+type Plan = "Free" | "Monthly" | "Lifetime";
 
 export function Sidebar() {
   const pathname = usePathname();
 
   const [user, setUser] =
     useState<User | null>(null);
+  const [plan, setPlan] =
+    useState<Plan>("Free");
 
   useEffect(() => {
 
@@ -56,6 +62,21 @@ export function Sidebar() {
       } = await supabase.auth.getUser();
 
       setUser(user);
+
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("plan")
+        .eq("id", user.id)
+        .single();
+
+      if (
+        profile?.plan === "Monthly" ||
+        profile?.plan === "Lifetime"
+      ) {
+        setPlan(profile.plan);
+      }
     }
 
     loadUser();
@@ -68,7 +89,7 @@ export function Sidebar() {
       {/* LOGO */}
       <div className="border-b border-white/10 p-6">
 
-        <div className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-300/25 bg-emerald-400/[0.12] text-emerald-200 shadow-[0_0_34px_rgba(52,211,153,0.12)]">
             <Compass className="h-5 w-5" />
           </div>
@@ -82,16 +103,7 @@ export function Sidebar() {
               Group Travel OS
             </p>
           </div>
-        </div>
-
-        <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.055] p-4">
-          <p className="text-xs uppercase tracking-[0.18em] text-emerald-200/70">
-            AI Workspace
-          </p>
-          <p className="mt-2 text-sm leading-6 text-neutral-300">
-            Discover, vote and plan trips with your group.
-          </p>
-        </div>
+        </Link>
 
       </div>
 
@@ -100,10 +112,48 @@ export function Sidebar() {
 
         <div className="space-y-2">
 
+          <Link
+            href="/"
+            className={`flex items-center gap-3 rounded-2xl px-4 py-3 transition ${
+              pathname === "/"
+                ? "border border-emerald-300/20 bg-emerald-400/[0.12] text-emerald-100"
+                : "text-neutral-300 hover:bg-white/[0.07] hover:text-white"
+            }`}
+          >
+            <Home className="h-5 w-5" />
+            Home
+          </Link>
+
+          <div className="my-3 border-t border-white/10" />
+
           {items.map((item) => {
 
             const Icon =
               item.icon;
+            const isLocked =
+              plan === "Free" &&
+              ["Trips", "Calendar", "Archive"].includes(item.label);
+
+            if (isLocked) {
+              return (
+                <button
+                  key={item.label}
+                  type="button"
+                  className="flex w-full cursor-not-allowed items-center justify-between gap-3 rounded-2xl border border-red-400/20 bg-red-500/[0.045] px-4 py-3 text-left text-neutral-500"
+                  aria-disabled="true"
+                >
+                  <span className="flex items-center gap-3">
+                    <Icon className="h-5 w-5" />
+                    {item.label}
+                  </span>
+
+                  <span className="inline-flex items-center gap-1 rounded-full border border-red-300/20 bg-red-500/10 px-2 py-0.5 text-[11px] font-semibold text-red-100">
+                    <Lock className="h-3 w-3" />
+                    Pro
+                  </span>
+                </button>
+              );
+            }
 
             return (
               <Link
@@ -131,15 +181,20 @@ export function Sidebar() {
       {/* FOOTER */}
       <div className="border-t border-white/10 p-4">
 
-        <button className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-neutral-400 transition hover:bg-white/[0.07] hover:text-white">
+        <Link
+          href="/billing"
+          className={`flex items-center gap-3 rounded-2xl px-4 py-3 transition ${
+            pathname === "/billing"
+              ? "border border-emerald-300/20 bg-emerald-400/[0.12] text-emerald-100"
+              : "text-neutral-300 hover:bg-white/[0.07] hover:text-white"
+          }`}
+        >
+          <CreditCard className="h-5 w-5" />
+          Billing
+        </Link>
 
-          <Settings className="h-5 w-5" />
+        <div className="mt-4 border-t border-white/10" />
 
-          Settings
-
-        </button>
-
-        {/* USER */}
         <div className="mt-4">
 
           {user ? (

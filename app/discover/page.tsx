@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { FilterBar } from "./filter-bar";
 import { ResultsGrid } from "./results-grid";
 import { DestinationModal } from "./destination-modal";
+import { createClient } from "@/lib/supabase/client";
 
 export type Destination = {
   name: string;
@@ -16,6 +17,8 @@ export type Destination = {
   departure_location: string;
   departure_airport_code: string;
   destination_airport_code: string;
+  start_date?: string | null;
+  end_date?: string | null;
   best_for: string;
   vibes: string[];
   weather: string;
@@ -37,26 +40,25 @@ export type Destination = {
 
 export default function DiscoverPage() {
   const [loading, setLoading] = useState(false);
+  const [plan, setPlan] =
+    useState<"Free" | "Monthly" | "Lifetime">("Free");
 
   const [groupSize, setGroupSize] = useState("3-5");
   const [homeCity, setHomeCity] = useState("");
   const [homeCountry, setHomeCountry] = useState("Germany");
   const [temperature, setTemperature] = useState("Warm");
+  const [targetCountry, setTargetCountry] = useState("");
   const [flightTime, setFlightTime] =
     useState("Same continent");
   const [tripType, setTripType] = useState("Friends");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const [budgetAmount, setBudgetAmount] =
     useState("800");
 
   const [currency, setCurrency] =
     useState<"EUR" | "USD">("EUR");
-
-  const [pace, setPace] =
-    useState("Balanced");
-
-  const [accommodation, setAccommodation] =
-    useState("Airbnb");
 
   const [travelPersonality, setTravelPersonality] =
     useState("Spontaneous");
@@ -82,6 +84,33 @@ export default function DiscoverPage() {
     useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    const supabase = createClient();
+
+    async function loadPlan() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("plan")
+        .eq("id", user.id)
+        .single();
+
+      if (
+        profile?.plan === "Monthly" ||
+        profile?.plan === "Lifetime"
+      ) {
+        setPlan(profile.plan);
+      }
+    }
+
+    loadPlan();
+  }, []);
+
+  useEffect(() => {
     if (results.length > 0 && resultsRef.current) {
       resultsRef.current.scrollIntoView({
         behavior: "smooth",
@@ -103,21 +132,24 @@ export default function DiscoverPage() {
           groupSize,
           departure: homeCountry,
           temperature,
+          targetCountry,
           distance: flightTime,
           tripType,
           vibes: selectedVibes,
           extraInfo,
           budgetAmount,
+          startDate,
+          endDate,
           homeCity,
           homeCountry,
           homeLocation: [homeCity, homeCountry]
             .filter(Boolean)
             .join(", "),
-          pace,
-          accommodation,
           travelPersonality,
-          avoidTourist,
-          hates,
+          avoidTourist:
+            plan === "Free" ? false : avoidTourist,
+          hates:
+            plan === "Free" ? [] : hates,
           currency,
         }),
       });
@@ -138,6 +170,7 @@ export default function DiscoverPage() {
 
         <FilterBar
           loading={loading}
+          isFreePlan={plan === "Free"}
           groupSize={groupSize}
           setGroupSize={setGroupSize}
           homeCity={homeCity}
@@ -146,18 +179,20 @@ export default function DiscoverPage() {
           setHomeCountry={setHomeCountry}
           temperature={temperature}
           setTemperature={setTemperature}
+          targetCountry={targetCountry}
+          setTargetCountry={setTargetCountry}
           flightTime={flightTime}
           setFlightTime={setFlightTime}
           tripType={tripType}
           setTripType={setTripType}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
           budgetAmount={budgetAmount}
           setBudgetAmount={setBudgetAmount}
           currency={currency}
           setCurrency={setCurrency}
-          pace={pace}
-          setPace={setPace}
-          accommodation={accommodation}
-          setAccommodation={setAccommodation}
           travelPersonality={travelPersonality}
           setTravelPersonality={setTravelPersonality}
           avoidTourist={avoidTourist}
@@ -174,6 +209,7 @@ export default function DiscoverPage() {
         <div ref={resultsRef}>
           <ResultsGrid
             results={results}
+            isFreePlan={plan === "Free"}
             onSelect={(destination) =>
               setSelectedDestination(destination)
             }
@@ -183,6 +219,7 @@ export default function DiscoverPage() {
         <DestinationModal
           destination={selectedDestination}
           open={!!selectedDestination}
+          isFreePlan={plan === "Free"}
           onOpenChange={() =>
             setSelectedDestination(null)
           }

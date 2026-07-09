@@ -3,11 +3,13 @@ import { Destination } from "./page";
 type Props = {
   destination: Destination;
   onClick: () => void;
+  isFreePlan: boolean;
 };
 
 export function DestinationCard({
   destination,
   onClick,
+  isFreePlan,
 }: Props) {
   return (
     <div
@@ -59,7 +61,9 @@ export function DestinationCard({
         </div>
 
         <button className="mt-8 w-full rounded-2xl bg-white py-3 font-medium text-black transition hover:scale-[1.02]">
-          Create Trip
+          {isFreePlan
+            ? "View details"
+            : "Create Trip"}
         </button>
       </div>
     </div>
