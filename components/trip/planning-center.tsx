@@ -202,20 +202,22 @@ export default function PlanningCenter({
         <button
           type="button"
           onClick={() => setFlightOpen(true)}
-          className="group flex h-full flex-col items-start rounded-[28px] border border-white/10 bg-black/40 p-6 text-left transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/10"
+          className="travel-card-hover group flex h-full min-h-[250px] flex-col items-start rounded-[28px] border border-white/10 bg-white/[0.045] p-6 text-left"
         >
-          <Plane className="h-6 w-6 text-neutral-300" />
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-300/20 bg-sky-400/10 text-sky-100">
+            <Plane className="h-6 w-6" />
+          </span>
 
           <h3 className="mt-5 text-2xl font-semibold">
             Flights
           </h3>
 
-          <p className="mt-3 text-neutral-400">
+          <p className="mt-3 leading-7 text-neutral-300">
             Search from {departureAirportCode || departureLocation || "your airport"} and use the AI flight estimate.
           </p>
 
           {savedBudget !== null && (
-            <p className="mt-auto rounded-full border border-green-500/20 bg-green-500/10 px-3 py-2 text-sm text-green-300">
+            <p className="mt-auto rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-2 text-sm text-amber-200">
               Flight estimate: EUR {savedBudget}
             </p>
           )}
@@ -224,15 +226,17 @@ export default function PlanningCenter({
         <button
           type="button"
           onClick={() => setItineraryOpen(true)}
-          className="group flex h-full flex-col items-start rounded-[28px] border border-white/10 bg-black/40 p-6 text-left transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/10"
+          className="travel-card-hover group flex h-full min-h-[250px] flex-col items-start rounded-[28px] border border-white/10 bg-white/[0.045] p-6 text-left"
         >
-          <CalendarDays className="h-6 w-6 text-neutral-300" />
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-300/20 bg-sky-400/10 text-sky-100">
+            <CalendarDays className="h-6 w-6" />
+          </span>
 
           <h3 className="mt-5 text-2xl font-semibold">
             Itinerary
           </h3>
 
-          <p className="mt-3 text-neutral-400">
+          <p className="mt-3 leading-7 text-neutral-300">
             Turn accepted activities into daily plans.
           </p>
         </button>
@@ -240,15 +244,17 @@ export default function PlanningCenter({
         <button
           type="button"
           onClick={() => setBudgetOpen(true)}
-          className="group flex h-full flex-col items-start rounded-[28px] border border-white/10 bg-black/40 p-6 text-left transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/10"
+          className="travel-card-hover group flex h-full min-h-[250px] flex-col items-start rounded-[28px] border border-white/10 bg-white/[0.045] p-6 text-left"
         >
-          <Wallet className="h-6 w-6 text-neutral-300" />
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-violet-300/20 bg-violet-400/10 text-violet-100">
+            <Wallet className="h-6 w-6" />
+          </span>
 
           <h3 className="mt-5 text-2xl font-semibold">
             Budget
           </h3>
 
-          <p className="mt-3 text-neutral-400">
+          <p className="mt-3 leading-7 text-neutral-300">
             Track costs and split expenses fairly.
           </p>
         </button>

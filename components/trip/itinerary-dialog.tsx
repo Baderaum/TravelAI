@@ -197,7 +197,7 @@ export default function ItineraryDialog({
 
           <div className="px-5 py-7 sm:px-9 sm:py-9">
             {days.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-white/15 bg-white/[0.03] px-6 py-14 text-center">
+              <div className="rounded-3xl border border-dashed border-white/[0.15] bg-white/[0.03] px-6 py-14 text-center">
                 <CalendarDays className="mx-auto h-8 w-8 text-neutral-500" />
                 <h3 className="mt-4 text-xl font-semibold">
                   Add your trip dates first

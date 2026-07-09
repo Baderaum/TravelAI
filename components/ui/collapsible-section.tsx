@@ -31,8 +31,8 @@ export default function CollapsibleSection({
   return (
     <section
       className={cn(
-        "rounded-[36px] border border-white/10 bg-white/[0.04] p-8 transition-[border-color,background-color,box-shadow] duration-200",
-        open ? "shadow-none" : "bg-white/[0.035]",
+        "travel-card rounded-[36px] p-8 transition-[border-color,background-color,box-shadow] duration-200",
+        open ? "" : "bg-white/[0.045]",
         className
       )}
     >
@@ -50,7 +50,7 @@ export default function CollapsibleSection({
           )}
 
           <span className="min-w-0">
-            <span className="block text-3xl font-semibold transition group-hover:text-neutral-200">
+            <span className="block text-3xl font-semibold tracking-[-0.01em] transition group-hover:text-white">
               {title}
             </span>
 
@@ -70,7 +70,7 @@ export default function CollapsibleSection({
             onClick={() => setOpen((value) => !value)}
             aria-label={open ? `Collapse ${title}` : `Expand ${title}`}
             aria-expanded={open}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10 active:scale-[0.98]"
+            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.12] bg-white/[0.075] text-white transition hover:border-white/20 hover:bg-white/10 active:scale-[0.98]"
           >
             <ChevronDown
               className={cn(

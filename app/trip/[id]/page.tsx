@@ -92,52 +92,56 @@ export default async function TripPage({
       : null;
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="travel-page-bg relative min-h-screen overflow-hidden text-white">
+      <div className="travel-grid-overlay pointer-events-none absolute inset-0" />
 
       {/* HERO */}
-      <section className="relative border-b border-white/10">
+      <section className="relative overflow-hidden border-b border-white/10">
 
         <div className="absolute inset-0">
-          <img
-            src={trip.cover_image}
-            alt={trip.title}
-            className="h-full w-full object-cover opacity-45"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/70 to-black" />
+          {trip.cover_image && (
+            <img
+              src={trip.cover_image}
+              alt={trip.title}
+              className="h-full w-full object-cover opacity-90"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/45 to-black" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/20" />
         </div>
 
-        <div className="relative mx-auto max-w-7xl px-10 pb-16 pt-10">
+        <div className="relative mx-auto max-w-7xl px-6 pb-16 pt-8 sm:px-10">
 
           <Link
             href="/trips"
-            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-black/40 px-5 py-3 text-sm text-white backdrop-blur transition hover:bg-white/10"
+            className="inline-flex items-center gap-2 rounded-2xl border border-white/[0.15] bg-black/30 px-5 py-3 text-sm text-white backdrop-blur-xl transition hover:bg-white/10"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Trips
           </Link>
 
-          <div className="mt-20 flex items-start justify-between gap-8">
+          <div className="mt-16 flex items-start justify-between gap-8">
             <div className="max-w-4xl">
 
             <div className="mb-5 flex flex-wrap items-center gap-3">
 
-              <span className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm text-neutral-200 backdrop-blur">
+              <span className="travel-soft-pill rounded-full px-4 py-2 text-sm text-neutral-200 backdrop-blur">
                 Travel Workspace
               </span>
 
-              <span className="rounded-full bg-green-500/15 px-4 py-2 text-sm text-green-300">
+              <span className="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-200">
                 {destination?.match_score
                   ? `${destination.match_score}% match`
                   : "AI planned"}
               </span>
 
-              <span className="rounded-full bg-white/10 px-4 py-2 text-sm capitalize text-neutral-200">
+              <span className="travel-soft-pill rounded-full px-4 py-2 text-sm capitalize text-neutral-200">
                 {trip.status}
               </span>
 
             </div>
 
-            <h1 className="text-6xl font-bold leading-tight">
+            <h1 className="text-5xl font-bold leading-tight sm:text-7xl">
               {trip.title}
             </h1>
 
@@ -161,14 +165,14 @@ export default async function TripPage({
       </section>
 
       {/* MAIN */}
-      <main className="mx-auto max-w-7xl px-10 py-10">
+      <main className="relative mx-auto max-w-7xl px-6 py-10 sm:px-10">
 
         {/* QUICK FACTS */}
         <section className="grid gap-4 md:grid-cols-4">
 
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
-            <Plane className="h-5 w-5 text-neutral-400" />
-            <p className="mt-4 text-sm text-neutral-500">
+          <div className="travel-card-muted rounded-[28px] p-5">
+            <Plane className="h-5 w-5 text-emerald-200" />
+            <p className="mt-4 text-sm text-neutral-400">
               Flight Time
             </p>
             <p className="mt-2 text-2xl font-semibold">
@@ -176,26 +180,26 @@ export default async function TripPage({
             </p>
           </div>
 
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
-            <Wallet className="h-5 w-5 text-neutral-400" />
-            <p className="mt-4 text-sm text-neutral-500">
+          <div className="travel-accent-card rounded-[28px] p-5">
+            <Wallet className="h-5 w-5 text-amber-200" />
+            <p className="mt-4 text-sm text-neutral-400">
               Budget
             </p>
             <p className="mt-2 text-2xl font-semibold">
               {data.estimated_budget
-                ? `€${data.estimated_budget}`
+                ? `EUR ${data.estimated_budget}`
                 : "Not set"}
             </p>
             {flightBudget !== null && (
-              <p className="mt-2 text-sm text-green-300">
+              <p className="mt-2 text-sm text-amber-200">
                 Includes est. EUR {flightBudget} flights
               </p>
             )}
           </div>
 
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
-            <Compass className="h-5 w-5 text-neutral-400" />
-            <p className="mt-4 text-sm text-neutral-500">
+          <div className="travel-card-muted rounded-[28px] p-5">
+            <Compass className="h-5 w-5 text-amber-200" />
+            <p className="mt-4 text-sm text-neutral-400">
               Vibes
             </p>
             <p className="mt-2 truncate text-2xl font-semibold">
@@ -205,9 +209,9 @@ export default async function TripPage({
             </p>
           </div>
 
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
-            <Users className="h-5 w-5 text-neutral-400" />
-            <p className="mt-4 text-sm text-neutral-500">
+          <div className="travel-card-muted rounded-[28px] p-5">
+            <Users className="h-5 w-5 text-sky-200" />
+            <p className="mt-4 text-sm text-neutral-400">
               Members
             </p>
             <p className="mt-2 text-2xl font-semibold">
@@ -254,7 +258,7 @@ export default async function TripPage({
             {/* SUMMARY */}
             <CollapsibleSection
               title="Why is this a match"
-              icon={<Sparkles className="h-6 w-6 text-green-400" />}
+              icon={<Sparkles className="h-6 w-6 text-emerald-300" />}
             >
 
               <p className="text-lg leading-8 text-neutral-300">
@@ -268,9 +272,9 @@ export default async function TripPage({
                   {data.why_match.map((reason: string) => (
                     <div
                       key={reason}
-                      className="flex gap-3 rounded-2xl border border-white/10 bg-black/40 p-4"
+                      className="flex gap-3 rounded-2xl border border-emerald-300/[0.15] bg-emerald-400/[0.08] p-4"
                     >
-                      <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-green-400" />
+                      <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-emerald-300" />
 
                       <p className="text-neutral-300">
                         {reason}
@@ -291,12 +295,12 @@ export default async function TripPage({
             />
 
             {/* MAP */}
-            <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-6">
+            <div className="travel-card rounded-[36px] p-6">
 
               <div className="mb-5 flex items-center justify-between">
 
                 <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-green-400" />
+                  <MapPin className="h-5 w-5 text-amber-200" />
 
                   <h3 className="text-2xl font-semibold">
                     Destination
@@ -305,7 +309,7 @@ export default async function TripPage({
 
               </div>
 
-              <div className="h-[310px] overflow-hidden rounded-[28px] border border-white/10 bg-[#d9f3ff]">
+              <div className="h-[310px] overflow-hidden rounded-[28px] border border-white/[0.15] bg-[#d9f3ff] shadow-inner">
                 <TripMap
                   lat={Number(data.coordinates?.lat)}
                   lng={Number(data.coordinates?.lng)}
@@ -317,7 +321,7 @@ export default async function TripPage({
                 {trip.destination}
               </p>
 
-              <p className="mt-2 text-neutral-400">
+              <p className="mt-2 text-neutral-300">
                 {data.subtitle || "Location details will appear here."}
               </p>
 
@@ -325,7 +329,7 @@ export default async function TripPage({
 
             {/* VIBES */}
             {data.vibes?.length > 0 && (
-              <div className="rounded-[36px] border border-white/10 bg-white/[0.04] p-6">
+              <div className="travel-card-muted rounded-[36px] p-6">
 
                 <h3 className="text-2xl font-semibold">
                   Trip Vibes
@@ -336,7 +340,7 @@ export default async function TripPage({
                   {data.vibes.map((vibe: string) => (
                     <span
                       key={vibe}
-                      className="rounded-full border border-white/10 bg-black/40 px-4 py-2 text-sm text-neutral-200"
+                      className="rounded-full border border-white/10 bg-white/[0.055] px-4 py-2 text-sm text-neutral-200"
                     >
                       {vibe}
                     </span>

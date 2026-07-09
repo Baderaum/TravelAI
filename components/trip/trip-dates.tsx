@@ -20,18 +20,26 @@ export default function TripDates({
   endDate,
 }: Props) {
   return (
-    <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+    <div className="travel-card rounded-[28px] p-5">
       <div className="flex items-center gap-3">
-        <CalendarDays className="h-5 w-5 text-green-400" />
+        <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-sky-300/20 bg-sky-400/10 text-sky-100">
+          <CalendarDays className="h-5 w-5" />
+        </span>
 
-        <h3 className="text-xl font-semibold">
-          Trip Dates
-        </h3>
+        <div>
+          <h3 className="text-xl font-semibold">
+            Trip Dates
+          </h3>
+
+          <p className="text-sm text-neutral-400">
+            Read-only schedule
+          </p>
+        </div>
       </div>
 
       <div className="mt-5 grid gap-3">
-        <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3">
-          <p className="text-xs uppercase tracking-wide text-neutral-500">
+        <div className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3">
+          <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">
             Start
           </p>
           <p className="mt-1 text-lg font-medium">
@@ -39,8 +47,8 @@ export default function TripDates({
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3">
-          <p className="text-xs uppercase tracking-wide text-neutral-500">
+        <div className="rounded-2xl border border-white/10 bg-black/25 px-4 py-3">
+          <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">
             End
           </p>
           <p className="mt-1 text-lg font-medium">
