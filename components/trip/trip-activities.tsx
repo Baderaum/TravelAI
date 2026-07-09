@@ -303,7 +303,7 @@ export default function TripActivities({
               onClick={() =>
                 setActionsOpen((value) => !value)
               }
-              className="flex h-12 min-w-[150px] items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 text-sm font-medium text-white outline-none transition hover:bg-white/10 disabled:opacity-50"
+              className="flex h-12 min-w-[150px] items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.055] px-4 text-sm font-medium text-white outline-none transition hover:border-white/20 hover:bg-white/10 disabled:opacity-50"
             >
               {actionLoading ? "Planning..." : "Actions"}
               <ChevronDown
@@ -314,7 +314,7 @@ export default function TripActivities({
             </button>
 
             {actionsOpen && (
-              <div className="absolute right-0 top-14 z-30 w-56 rounded-3xl border border-white/10 bg-black p-2 shadow-[0_24px_80px_rgba(0,0,0,0.65)]">
+              <div className="absolute right-0 top-14 z-30 w-56 rounded-3xl border border-white/10 bg-[#07110d] p-2 shadow-[0_24px_80px_rgba(0,0,0,0.65)]">
                 <button
                   type="button"
                   onClick={async () => {
@@ -346,7 +346,7 @@ export default function TripActivities({
           />
         </div>
       )}
-      className="rounded-[32px] bg-white/5"
+      className="rounded-[32px]"
       contentClassName="space-y-5"
     >
 
@@ -355,15 +355,17 @@ export default function TripActivities({
           <div
             key={activity.id}
             onClick={() => setSelectedActivity(activity)}
-            className="group cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-black/40 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.06] hover:shadow-[0_0_40px_rgba(255,255,255,0.06)]"
+            className="travel-card-hover group cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04]"
           >
-            <div className="flex items-center gap-4 p-3">
+            <div className="flex items-center gap-5 p-4">
               {activity.image && (
-                <img
-                  src={activity.image}
-                  alt={activity.title}
-                  className="h-24 w-32 rounded-2xl object-cover transition duration-500 group-hover:scale-105"
-                />
+                <div className="h-28 w-40 shrink-0 overflow-hidden rounded-2xl border border-white/10">
+                  <img
+                    src={activity.image}
+                    alt={activity.title}
+                    className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                  />
+                </div>
               )}
 
               <div className="min-w-0 flex-1">
@@ -371,7 +373,7 @@ export default function TripActivities({
                   {activity.title}
                 </h3>
 
-                <p className="mt-2 text-sm text-neutral-400">
+                <p className="mt-2 text-sm text-neutral-300">
                   {activity.start_time ? (
                     (() => {
                       const start =
@@ -475,6 +477,18 @@ export default function TripActivities({
                 </p>
 
                 <div className="mt-4 flex flex-wrap gap-2">
+                  {activity.estimated_cost != null && (
+                    <span className="rounded-full border border-amber-300/20 bg-amber-400/10 px-3 py-1.5 text-xs text-amber-200">
+                      EUR {activity.estimated_cost}
+                    </span>
+                  )}
+
+                  {activity.location && (
+                    <span className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs text-neutral-300">
+                      {activity.location}
+                    </span>
+                  )}
+
                   {["love", "interested", "skip"].map((vote) => {
                     const count =
                       votes.filter(
@@ -491,7 +505,7 @@ export default function TripActivities({
 
                           voteActivity(activity.id!, vote);
                         }}
-                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white transition hover:bg-white/10"
+                        className="rounded-full border border-white/10 bg-white/[0.055] px-3 py-1.5 text-xs text-white transition hover:bg-white/10"
                       >
                         {vote} {count}
                       </button>
@@ -506,7 +520,7 @@ export default function TripActivities({
 
                   setActivityToDelete(activity);
                 }}
-                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-300 active:scale-[0.98]"
+                className="rounded-2xl border border-white/10 bg-white/[0.055] px-4 py-2 text-sm font-medium text-white transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-300 active:scale-[0.98]"
               >
                 Delete
               </button>

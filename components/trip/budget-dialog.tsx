@@ -236,7 +236,7 @@ export default function BudgetDialog({
                   return (
                     <div
                       key={day.key}
-                      className="grid grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-white/8 bg-black/50 px-3 py-3"
+                      className="grid grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-white/[0.08] bg-black/50 px-3 py-3"
                     >
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-400/10 text-sm font-semibold text-green-300">
                         {index + 1}

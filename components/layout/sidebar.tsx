@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import {
   Compass,
@@ -12,6 +13,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 
 import { useEffect, useState } from "react";
+import type { User } from "@supabase/supabase-js";
 
 const items = [
   {
@@ -37,9 +39,10 @@ const items = [
 ];
 
 export function Sidebar() {
+  const pathname = usePathname();
 
   const [user, setUser] =
-    useState<any>(null);
+    useState<User | null>(null);
 
   useEffect(() => {
 
@@ -60,18 +63,35 @@ export function Sidebar() {
   }, []);
 
   return (
-    <div className="flex h-screen w-[280px] flex-col border-r border-white/10 bg-black">
+    <div className="relative z-20 flex h-screen w-[280px] shrink-0 flex-col border-r border-white/10 bg-[#06110d]/92 shadow-[24px_0_80px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
 
       {/* LOGO */}
       <div className="border-b border-white/10 p-6">
 
-        <h1 className="text-2xl font-bold text-white">
-          TravelAI
-        </h1>
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-300/25 bg-emerald-400/[0.12] text-emerald-200 shadow-[0_0_34px_rgba(52,211,153,0.12)]">
+            <Compass className="h-5 w-5" />
+          </div>
 
-        <p className="mt-1 text-sm text-neutral-500">
-          Group Travel OS
-        </p>
+          <div>
+            <h1 className="text-2xl font-bold text-white">
+              TravelAI
+            </h1>
+
+            <p className="mt-1 text-sm text-emerald-100/55">
+              Group Travel OS
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.055] p-4">
+          <p className="text-xs uppercase tracking-[0.18em] text-emerald-200/70">
+            AI Workspace
+          </p>
+          <p className="mt-2 text-sm leading-6 text-neutral-300">
+            Discover, vote and plan trips with your group.
+          </p>
+        </div>
 
       </div>
 
@@ -89,7 +109,11 @@ export function Sidebar() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-neutral-300 transition hover:bg-white/5 hover:text-white"
+                className={`flex items-center gap-3 rounded-2xl px-4 py-3 transition ${
+                  pathname === item.href
+                    ? "border border-emerald-300/20 bg-emerald-400/[0.12] text-emerald-100"
+                    : "text-neutral-300 hover:bg-white/[0.07] hover:text-white"
+                }`}
               >
 
                 <Icon className="h-5 w-5" />
@@ -107,7 +131,7 @@ export function Sidebar() {
       {/* FOOTER */}
       <div className="border-t border-white/10 p-4">
 
-        <button className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-neutral-400 transition hover:bg-white/5 hover:text-white">
+        <button className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-neutral-400 transition hover:bg-white/[0.07] hover:text-white">
 
           <Settings className="h-5 w-5" />
 
@@ -122,7 +146,7 @@ export function Sidebar() {
 
             <div>
 
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.065] p-4">
 
                 <p className="text-xs text-neutral-500">
                   Logged in as
