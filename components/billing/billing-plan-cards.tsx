@@ -6,13 +6,18 @@ import {
   ArrowRight,
   Check,
   Compass,
+  FlaskConical,
   Infinity,
   Sparkles,
 } from "lucide-react";
 
 import stripeLogo from "@/screenshots/stripe.png";
 
-type PlanId = "Free" | "Monthly" | "Lifetime";
+type PlanId =
+  | "Free"
+  | "Monthly"
+  | "Lifetime"
+  | "LiveTest";
 
 type BillingPlan = {
   id: PlanId;
@@ -64,10 +69,13 @@ const plans: BillingPlan[] = [
 
 export default function BillingPlanCards({
   currentPlan,
+  enableLiveTestPayment,
 }: {
-  currentPlan: PlanId;
+  currentPlan: Exclude<PlanId, "LiveTest">;
+  enableLiveTestPayment: boolean;
 }) {
-  const [selectedPlan, setSelectedPlan] = useState(currentPlan);
+  const [selectedPlan, setSelectedPlan] =
+    useState<PlanId>(currentPlan);
   const [loadingPlan, setLoadingPlan] =
     useState<PlanId | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -80,7 +88,7 @@ export default function BillingPlanCards({
 
     try {
       const endpoint =
-        currentPlan === plan
+        plan !== "LiveTest" && currentPlan === plan
           ? "/api/stripe/portal"
           : "/api/stripe/checkout";
       const response = await fetch(endpoint, {
@@ -223,6 +231,39 @@ export default function BillingPlanCards({
         );
         })}
       </div>
+
+      {enableLiveTestPayment && (
+        <div className="mt-6 rounded-[28px] border border-blue-300/25 bg-blue-500/[0.08] p-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="flex items-center gap-3 text-blue-100">
+                <FlaskConical className="h-5 w-5" />
+                <h3 className="text-xl font-bold">
+                  Live Stripe webhook test
+                </h3>
+              </div>
+
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-300">
+                Runs a small live one-time payment to verify
+                checkout, webhook delivery and database access.
+                This does not unlock Pro.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              disabled={loadingPlan === "LiveTest"}
+              onClick={() => startCheckout("LiveTest")}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 font-semibold text-black transition hover:bg-neutral-200 disabled:cursor-wait disabled:opacity-70"
+            >
+              {loadingPlan === "LiveTest"
+                ? "Opening Stripe..."
+                : "Pay test amount"}
+              <ArrowRight className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -74,7 +74,13 @@ export default async function BillingPage() {
         </section>
 
         <section className="mt-10">
-          <BillingPlanCards currentPlan={currentPlan} />
+          <BillingPlanCards
+            currentPlan={currentPlan}
+            enableLiveTestPayment={
+              process.env.ENABLE_STRIPE_LIVE_TEST_PAYMENT ===
+              "true"
+            }
+          />
         </section>
       </div>
     </DashboardShell>

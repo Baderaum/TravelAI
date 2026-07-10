@@ -11,7 +11,11 @@ type CheckoutSession = {
 };
 
 function isStripePlan(plan: unknown): plan is StripePlan {
-  return plan === "Monthly" || plan === "Lifetime";
+  return (
+    plan === "Monthly" ||
+    plan === "Lifetime" ||
+    plan === "LiveTest"
+  );
 }
 
 export async function POST(request: Request) {
@@ -47,6 +51,8 @@ export async function POST(request: Request) {
     const params = new URLSearchParams();
     const mode =
       plan === "Monthly" ? "subscription" : "payment";
+    const metadataPlan =
+      plan === "LiveTest" ? "WebhookTest" : plan;
 
     params.set("mode", mode);
     params.set("line_items[0][price]", getStripePriceId(plan));
@@ -55,7 +61,7 @@ export async function POST(request: Request) {
     params.set("cancel_url", `${origin}/billing?checkout=cancelled`);
     params.set("client_reference_id", user.id);
     params.set("metadata[userId]", user.id);
-    params.set("metadata[plan]", plan);
+    params.set("metadata[plan]", metadataPlan);
     params.set("allow_promotion_codes", "true");
 
     if (profile?.stripe_customer_id) {
@@ -66,10 +72,10 @@ export async function POST(request: Request) {
 
     if (plan === "Monthly") {
       params.set("subscription_data[metadata][userId]", user.id);
-      params.set("subscription_data[metadata][plan]", plan);
+      params.set("subscription_data[metadata][plan]", metadataPlan);
     } else {
       params.set("payment_intent_data[metadata][userId]", user.id);
-      params.set("payment_intent_data[metadata][plan]", plan);
+      params.set("payment_intent_data[metadata][plan]", metadataPlan);
     }
 
     const session = await stripeRequest<CheckoutSession>(

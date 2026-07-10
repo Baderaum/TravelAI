@@ -1,6 +1,9 @@
 import crypto from "node:crypto";
 
-export type StripePlan = "Monthly" | "Lifetime";
+export type StripePlan =
+  | "Monthly"
+  | "Lifetime"
+  | "LiveTest";
 
 const STRIPE_API_BASE = "https://api.stripe.com/v1";
 
@@ -18,7 +21,9 @@ export function getStripePriceId(plan: StripePlan) {
   const priceId =
     plan === "Monthly"
       ? process.env.STRIPE_MONTHLY_PRICE_ID
-      : process.env.STRIPE_LIFETIME_PRICE_ID;
+      : plan === "Lifetime"
+      ? process.env.STRIPE_LIFETIME_PRICE_ID
+      : process.env.STRIPE_LIVE_TEST_PRICE_ID;
 
   if (!priceId) {
     throw new Error(
