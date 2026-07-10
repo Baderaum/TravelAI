@@ -4,6 +4,13 @@ type Props = {
   loading: boolean;
   generateTrip: () => void;
   isFreePlan: boolean;
+  discoveryUsage: {
+    used: number;
+    limit: number | null;
+    remaining: number | null;
+    unlimited: boolean;
+  } | null;
+  errorMessage: string;
 
   groupSize: string;
   setGroupSize: (value: string) => void;
@@ -103,6 +110,8 @@ export function FilterBar({
   loading,
   generateTrip,
   isFreePlan,
+  discoveryUsage,
+  errorMessage,
 
   groupSize,
   setGroupSize,
@@ -152,6 +161,11 @@ export function FilterBar({
   hates,
   setHates,
 }: Props) {
+  const dailyLimitReached =
+    isFreePlan && discoveryUsage?.remaining === 0;
+  const freeDiscoveryLimit =
+    discoveryUsage?.limit ?? null;
+
   function toggleVibe(vibe: string) {
     if (selectedVibes.includes(vibe)) {
       setSelectedVibes(
@@ -581,15 +595,39 @@ export function FilterBar({
     </div>
 
       {/* GENERATE BUTTON */}
-      <button
-        onClick={generateTrip}
-        disabled={loading}
-        className="mt-10 rounded-2xl bg-white px-8 py-4 font-semibold text-black transition hover:scale-[1.02] disabled:opacity-50"
-      >
-        {loading
-          ? "Generating..."
-          : "Generate Trip"}
-      </button>
+      <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+        <button
+          onClick={generateTrip}
+          disabled={loading || dailyLimitReached}
+          className={`rounded-2xl px-8 py-4 font-semibold transition disabled:opacity-50 ${
+            dailyLimitReached
+              ? "cursor-not-allowed border border-red-300/25 bg-red-500/10 text-red-100"
+              : "bg-white text-black hover:scale-[1.02]"
+          }`}
+        >
+          {loading
+            ? "Generating..."
+            : dailyLimitReached
+            ? "Daily limit reached"
+            : "Generate Trip"}
+        </button>
+
+        {isFreePlan && freeDiscoveryLimit !== null && (
+          <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-3 text-sm text-neutral-300">
+            Free searches today:{" "}
+            <span className="font-semibold text-white">
+              {discoveryUsage?.used ?? 0} /{" "}
+              {freeDiscoveryLimit}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {errorMessage && (
+        <p className="mt-4 max-w-2xl rounded-2xl border border-red-300/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+          {errorMessage}
+        </p>
+      )}
     </div>
   );
 }

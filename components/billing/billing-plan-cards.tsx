@@ -68,10 +68,61 @@ export default function BillingPlanCards({
   currentPlan: PlanId;
 }) {
   const [selectedPlan, setSelectedPlan] = useState(currentPlan);
+  const [loadingPlan, setLoadingPlan] =
+    useState<PlanId | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  async function startCheckout(plan: PlanId) {
+    if (plan === "Free") return;
+
+    setLoadingPlan(plan);
+    setErrorMessage("");
+
+    try {
+      const endpoint =
+        currentPlan === plan
+          ? "/api/stripe/portal"
+          : "/api/stripe/checkout";
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body:
+          endpoint === "/api/stripe/checkout"
+            ? JSON.stringify({ plan })
+            : undefined,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.url) {
+        throw new Error(
+          data.error || "Could not open Stripe"
+        );
+      }
+
+      window.location.href = data.url;
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Could not open Stripe"
+      );
+      setLoadingPlan(null);
+    }
+  }
 
   return (
-    <div className="grid gap-5 md:grid-cols-2">
-      {plans.map((plan) => {
+    <div>
+      {errorMessage && (
+        <p className="mb-5 rounded-2xl border border-red-300/20 bg-red-500/10 px-5 py-4 text-sm text-red-100">
+          {errorMessage}
+        </p>
+      )}
+
+      <div className="grid gap-5 md:grid-cols-2">
+        {plans.map((plan) => {
         const Icon = plan.icon;
         const selected = selectedPlan === plan.id;
         const accentClasses =
@@ -89,9 +140,8 @@ export default function BillingPlanCards({
         const isCurrentPlan = currentPlan === plan.id;
 
         return (
-          <button
+          <article
             key={plan.id}
-            type="button"
             onClick={() => setSelectedPlan(plan.id)}
             className={`travel-card-hover rounded-[32px] border p-7 text-left transition ${
               isCurrentPlan
@@ -146,19 +196,33 @@ export default function BillingPlanCards({
               ))}
             </div>
 
-            <div
+            <button
+              type="button"
+              disabled={
+                !plan.paid ||
+                loadingPlan === plan.id
+              }
+              onClick={(event) => {
+                event.stopPropagation();
+                startCheckout(plan.id);
+              }}
               className={`mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-6 py-4 font-semibold transition ${
                 plan.paid
-                  ? "bg-white text-black hover:bg-neutral-200"
+                  ? "bg-white text-black hover:bg-neutral-200 disabled:cursor-wait disabled:opacity-70"
                   : "border border-white/10 bg-white/[0.055] text-neutral-300"
               }`}
             >
-              {plan.button}
+              {loadingPlan === plan.id
+                ? "Opening Stripe..."
+                : isCurrentPlan && plan.paid
+                ? "Manage billing"
+                : plan.button}
               {plan.paid && <ArrowRight className="h-5 w-5" />}
-            </div>
-          </button>
+            </button>
+          </article>
         );
-      })}
+        })}
+      </div>
     </div>
   );
 }
