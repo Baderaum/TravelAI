@@ -190,4 +190,35 @@
     background: rgb(255 255 255 / 0.08);
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
   }
+
+  .landing-fade-up {
+    animation: landing-fade-up 620ms ease both;
+  }
+
+  .landing-float {
+    animation: landing-float 7s ease-in-out infinite;
+  }
+}
+
+@keyframes landing-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes landing-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }

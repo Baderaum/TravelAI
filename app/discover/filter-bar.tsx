@@ -1,6 +1,9 @@
+import { Lock } from "lucide-react";
+
 type Props = {
   loading: boolean;
   generateTrip: () => void;
+  isFreePlan: boolean;
 
   groupSize: string;
   setGroupSize: (value: string) => void;
@@ -14,23 +17,26 @@ type Props = {
   temperature: string;
   setTemperature: (value: string) => void;
 
+  targetCountry: string;
+  setTargetCountry: (value: string) => void;
+
   flightTime: string;
   setFlightTime: (value: string) => void;
 
   tripType: string;
   setTripType: (value: string) => void;
 
+  startDate: string;
+  setStartDate: (value: string) => void;
+
+  endDate: string;
+  setEndDate: (value: string) => void;
+
   budgetAmount: string;
   setBudgetAmount: (value: string) => void;
 
   currency: "EUR" | "USD";
   setCurrency: (value: "EUR" | "USD") => void;
-
-  pace: string;
-  setPace: (value: string) => void;
-
-  accommodation: string;
-  setAccommodation: (value: string) => void;
 
   travelPersonality: string;
   setTravelPersonality: (value: string) => void;
@@ -96,6 +102,7 @@ const countryOptions = [
 export function FilterBar({
   loading,
   generateTrip,
+  isFreePlan,
 
   groupSize,
   setGroupSize,
@@ -109,23 +116,26 @@ export function FilterBar({
   temperature,
   setTemperature,
 
+  targetCountry,
+  setTargetCountry,
+
   flightTime,
   setFlightTime,
 
   tripType,
   setTripType,
 
+  startDate,
+  setStartDate,
+
+  endDate,
+  setEndDate,
+
   budgetAmount,
   setBudgetAmount,
 
   currency,
   setCurrency,
-
-  pace,
-  setPace,
-
-  accommodation,
-  setAccommodation,
 
   travelPersonality,
   setTravelPersonality,
@@ -156,6 +166,8 @@ export function FilterBar({
   }
 
   function toggleHate(hate: string) {
+    if (isFreePlan) return;
+
     if (hates.includes(hate)) {
       setHates(
         hates.filter((h) => h !== hate)
@@ -179,201 +191,191 @@ export function FilterBar({
         </p>
       </div>
 
-      {/* TOP GRID */}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-
+      <div className="space-y-6">
         {/* YOUR GROUP */}
-        <div className="rounded-[32px] border border-white/10 bg-white/5 p-6">
-          <h2 className="text-xl font-semibold text-white">
-            Your Group
-          </h2>
-
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-
+        <section className="travel-card rounded-[32px] p-6">
+          <div className="grid gap-5 xl:grid-cols-[180px_1fr] xl:items-center">
             <div>
-              <p className="mb-3 text-sm text-neutral-400">
-                Group Size
+              <h2 className="text-2xl font-semibold text-white">
+                Your Group
+              </h2>
+              <p className="mt-2 text-sm text-neutral-500">
+                Who is starting from where?
               </p>
-
-              <select
-                value={groupSize}
-                onChange={(e) =>
-                  setGroupSize(e.target.value)
-                }
-                className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-              >
-                <option>1-2</option>
-                <option>3-5</option>
-                <option>6-10</option>
-                <option>10+</option>
-              </select>
             </div>
 
-            <div>
-              <p className="mb-3 text-sm text-neutral-400">
-                Home country
-              </p>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
+              <label>
+                <p className="mb-3 text-sm text-neutral-400">Group Size</p>
+                <select
+                  value={groupSize}
+                  onChange={(e) => setGroupSize(e.target.value)}
+                  className="h-14 w-full rounded-2xl border border-white/10 bg-black px-4 text-white outline-none"
+                >
+                  <option>1-2</option>
+                  <option>3-5</option>
+                  <option>6-10</option>
+                  <option>10+</option>
+                </select>
+              </label>
 
-              <select
-                value={homeCountry}
-                onChange={(e) =>
-                  setHomeCountry(e.target.value)
-                }
-                className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-              >
-                {countryOptions.map((country) => (
-                  <option key={country}>
-                    {country}
-                  </option>
-                ))}
-              </select>
-            </div>
+              <label>
+                <p className="mb-3 text-sm text-neutral-400">Home country</p>
+                <select
+                  value={homeCountry}
+                  onChange={(e) => setHomeCountry(e.target.value)}
+                  className="h-14 w-full rounded-2xl border border-white/10 bg-black px-4 text-white outline-none"
+                >
+                  {countryOptions.map((country) => (
+                    <option key={country}>{country}</option>
+                  ))}
+                </select>
+              </label>
 
-            <div>
-              <p className="mb-3 text-sm text-neutral-400">
-                Home city
-              </p>
+              <label>
+                <p className="mb-3 text-sm text-neutral-400">Home city</p>
+                <input
+                  value={homeCity}
+                  onChange={(e) => setHomeCity(e.target.value)}
+                  placeholder="Cologne"
+                  className="h-14 w-full rounded-2xl border border-white/10 bg-black px-4 text-white outline-none"
+                />
+              </label>
 
-              <input
-                value={homeCity}
-                onChange={(e) =>
-                  setHomeCity(e.target.value)
-                }
-                placeholder="Cologne"
-                className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-              />
-            </div>
+              <label>
+                <p className="mb-3 text-sm text-neutral-400">Start date</p>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="h-14 w-full min-w-0 rounded-2xl border border-white/10 bg-black px-4 text-white outline-none"
+                />
+              </label>
 
-            <div>
-              <p className="mb-3 text-sm text-neutral-400">
-                Distance
-              </p>
-
-              <select
-                value={flightTime}
-                onChange={(e) =>
-                  setFlightTime(e.target.value)
-                }
-                className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-              >
-                <option>Within 2h</option>
-                <option>Same continent</option>
-                <option>International</option>
-                <option>Doesn&apos;t matter</option>
-              </select>
-            </div>
-
-            <div>
-              <p className="mb-3 text-sm text-neutral-400">
-                Trip Type
-              </p>
-
-              <select
-                value={tripType}
-                onChange={(e) =>
-                  setTripType(e.target.value)
-                }
-                className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-              >
-                <option>Friends</option>
-                <option>Couple</option>
-                <option>Solo</option>
-                <option>Family</option>
-                <option>Bachelor Party</option>
-              </select>
+              <label>
+                <p className="mb-3 text-sm text-neutral-400">End date</p>
+                <input
+                  type="date"
+                  value={endDate}
+                  min={startDate || undefined}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="h-14 w-full min-w-0 rounded-2xl border border-white/10 bg-black px-4 text-white outline-none"
+                />
+              </label>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* PREFERENCES */}
-        <div className="rounded-[32px] border border-white/10 bg-white/5 p-6">
-          <h2 className="text-xl font-semibold text-white">
-            Preferences
-          </h2>
-
-          <div className="mt-6 grid grid-cols-2 gap-4">
-
+        <section className="travel-card rounded-[32px] p-6">
+          <div className="grid gap-5 xl:grid-cols-[180px_1fr]">
             <div>
-              <p className="mb-3 text-sm text-neutral-400">
-                Temperature
+              <h2 className="text-2xl font-semibold text-white">
+                Preferences
+              </h2>
+              <p className="mt-2 text-sm text-neutral-500">
+                Narrow down the recommendation logic.
               </p>
-
-              <select
-                value={temperature}
-                onChange={(e) =>
-                  setTemperature(e.target.value)
-                }
-                className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-              >
-                <option>Warm</option>
-                <option>Cold</option>
-                <option>Mixed</option>
-                <option>Doesn&apos;t matter</option>
-              </select>
             </div>
 
-            <div>
-              <p className="mb-3 text-sm text-neutral-400">
-                Pace
-              </p>
+            <div className="grid gap-4 lg:grid-cols-[minmax(240px,0.8fr)_1fr]">
+              <label className="rounded-3xl border border-white/10 bg-black/25 p-4 lg:row-span-2">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-neutral-300">
+                      Target country
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-neutral-500">
+                      Optional. Leave empty for worldwide recommendations.
+                    </p>
+                  </div>
+                  <span className="rounded-full border border-white/10 bg-white/[0.055] px-3 py-1 text-xs text-neutral-400">
+                    Optional
+                  </span>
+                </div>
 
-              <select
-                value={pace}
-                onChange={(e) =>
-                  setPace(e.target.value)
-                }
-                className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-              >
-                <option>Relaxed</option>
-                <option>Balanced</option>
-                <option>Fast-Paced</option>
-              </select>
-            </div>
+                <select
+                  value={targetCountry}
+                  onChange={(e) => setTargetCountry(e.target.value)}
+                  className="mt-5 h-14 w-full rounded-2xl border border-white/10 bg-black px-4 text-white outline-none"
+                >
+                  <option value="">Any country</option>
+                  {countryOptions.map((country) => (
+                    <option key={country} value={country}>
+                      {country}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-            <div>
-              <p className="mb-3 text-sm text-neutral-400">
-                Accommodation
-              </p>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <label>
+                  <p className="mb-3 text-sm text-neutral-400">Distance</p>
+                  <select
+                    value={flightTime}
+                    onChange={(e) => setFlightTime(e.target.value)}
+                    className="h-14 w-full rounded-2xl border border-white/10 bg-black px-4 text-white outline-none"
+                  >
+                    <option>Within 2h</option>
+                    <option>Same continent</option>
+                    <option>International</option>
+                    <option>Doesn&apos;t matter</option>
+                  </select>
+                </label>
 
-              <select
-                value={accommodation}
-                onChange={(e) =>
-                  setAccommodation(e.target.value)
-                }
-                className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-              >
-                <option>Airbnb</option>
-                <option>Hotel</option>
-                <option>Hostel</option>
-                <option>Luxury Resort</option>
-              </select>
-            </div>
+                <label>
+                  <p className="mb-3 text-sm text-neutral-400">Trip Type</p>
+                  <select
+                    value={tripType}
+                    onChange={(e) => setTripType(e.target.value)}
+                    className="h-14 w-full rounded-2xl border border-white/10 bg-black px-4 text-white outline-none"
+                  >
+                    <option>Friends</option>
+                    <option>Couple</option>
+                    <option>Solo</option>
+                    <option>Family</option>
+                    <option>Bachelor Party</option>
+                  </select>
+                </label>
 
-            <div>
-              <p className="mb-3 text-sm text-neutral-400">
-                Personality
-              </p>
+                <label>
+                  <p className="mb-3 text-sm text-neutral-400">Temperature</p>
+                  <select
+                    value={temperature}
+                    onChange={(e) => setTemperature(e.target.value)}
+                    className="h-14 w-full rounded-2xl border border-white/10 bg-black px-4 text-white outline-none"
+                  >
+                    <option>Warm</option>
+                    <option>Cold</option>
+                    <option>Mixed</option>
+                    <option>Doesn&apos;t matter</option>
+                  </select>
+                </label>
 
-              <select
-                value={travelPersonality}
-                onChange={(e) =>
-                  setTravelPersonality(
-                    e.target.value
-                  )
-                }
-                className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3 text-white outline-none"
-              >
-                <option>Spontaneous</option>
-                <option>Planner</option>
-                <option>Luxury</option>
-                <option>Adventurous</option>
-              </select>
+                <label>
+                  <p className="mb-3 text-sm text-neutral-400">Personality</p>
+                  <select
+                    value={travelPersonality}
+                    onChange={(e) =>
+                      setTravelPersonality(e.target.value)
+                    }
+                    className="h-14 w-full rounded-2xl border border-white/10 bg-black px-4 text-white outline-none"
+                  >
+                    <option>Spontaneous</option>
+                    <option>Planner</option>
+                    <option>Luxury</option>
+                    <option>Adventurous</option>
+                  </select>
+                </label>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* BUDGET */}
-        <div className="rounded-[32px] border border-white/10 bg-white/5 p-6">
+        <section className="travel-card rounded-[32px] p-6">
+          <div className="grid gap-5 xl:grid-cols-[180px_1fr] xl:items-center">
+            <div>
           <h2 className="text-xl font-semibold text-white">
             Budget
           </h2>
@@ -381,8 +383,9 @@ export function FilterBar({
           <p className="mt-2 text-neutral-400">
             Approximate budget per person (the budget will mostly affect the recommended activities)
           </p>
+            </div>
 
-          <div className="mt-6 flex items-center gap-4">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center">
 
             <input
               type="range"
@@ -393,7 +396,7 @@ export function FilterBar({
               onChange={(e) =>
                 setBudgetAmount(e.target.value)
               }
-              className="w-full"
+              className="w-full md:max-w-xl"
             />
 
             <div className="flex flex-col items-center gap-2">
@@ -429,13 +432,14 @@ export function FilterBar({
 
               <div className="min-w-[110px] rounded-2xl bg-black px-4 py-3 text-center text-white">
                 {currency === "EUR"
-                  ? "€"
+                  ? "EUR "
                   : "$"}
                 {budgetAmount}
               </div>
             </div>
           </div>
-        </div>
+          </div>
+        </section>
       </div>
 
       {/* VIBES */}
@@ -464,20 +468,39 @@ export function FilterBar({
       </div>
 
       {/* HATES */}
-      <div className="mt-6 rounded-[32px] border border-white/10 bg-white/5 p-6">
-        <h2 className="text-xl font-semibold text-white">
-          Things To Avoid
-        </h2>
+      <div
+        className={`mt-6 rounded-[32px] border p-6 ${
+          isFreePlan
+            ? "border-red-400/25 bg-red-500/[0.045]"
+            : "border-white/10 bg-white/5"
+        }`}
+      >
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-xl font-semibold text-white">
+            Things To Avoid
+          </h2>
+
+          {isFreePlan && (
+            <span className="inline-flex items-center gap-2 rounded-full border border-red-300/25 bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-100">
+              <Lock className="h-3.5 w-3.5" />
+              Pro
+            </span>
+          )}
+        </div>
 
         <div className="mt-6 flex flex-wrap gap-3">
           {hateOptions.map((hate) => (
             <button
               key={hate}
+              type="button"
+              disabled={isFreePlan}
               onClick={() =>
                 toggleHate(hate)
               }
               className={`rounded-full px-4 py-2 text-sm transition ${
-                hates.includes(hate)
+                isFreePlan
+                  ? "cursor-not-allowed border border-red-300/20 bg-black/35 text-neutral-500"
+                  : hates.includes(hate)
                   ? "bg-red-500 text-white"
                   : "bg-black text-white"
               }`}
@@ -489,13 +512,28 @@ export function FilterBar({
       </div>
 
       {/* HIDDEN GEMS */}
-    <div className="mt-6 rounded-[32px] border border-white/10 bg-white/5 p-6">
+    <div
+      className={`mt-6 rounded-[32px] border p-6 ${
+        isFreePlan
+          ? "border-red-400/25 bg-red-500/[0.045]"
+          : "border-white/10 bg-white/5"
+      }`}
+    >
     <div className="flex items-center justify-between">
 
         <div>
+        <div className="flex items-center gap-3">
         <h2 className="text-xl font-semibold text-white">
             Hidden Gems Mode
         </h2>
+
+        {isFreePlan && (
+          <span className="inline-flex items-center gap-2 rounded-full border border-red-300/25 bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-100">
+            <Lock className="h-3.5 w-3.5" />
+            Pro
+          </span>
+        )}
+        </div>
 
         <p className="mt-2 text-neutral-400">
             Prioritize underrated destinations and avoid mass tourism.
@@ -503,16 +541,22 @@ export function FilterBar({
         </div>
 
         <button
+        type="button"
+        disabled={isFreePlan}
         onClick={() =>
             setAvoidTourist(!avoidTourist)
         }
         className={`rounded-2xl px-5 py-3 font-medium transition ${
-            avoidTourist
+            isFreePlan
+            ? "cursor-not-allowed border border-red-300/20 bg-black/35 text-neutral-500"
+            : avoidTourist
             ? "bg-white text-black"
             : "border border-white/10 bg-black text-white"
         }`}
         >
-        {avoidTourist
+        {isFreePlan
+            ? "Locked"
+            : avoidTourist
             ? "Enabled"
             : "Disabled"}
         </button>

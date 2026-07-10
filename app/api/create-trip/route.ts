@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+type DestinationActivity = {
+  title: string;
+  description: string;
+  image: string;
+  estimated_cost?: number;
+};
+
 export async function POST(request: Request) {
   try {
     const supabase =
@@ -18,6 +25,23 @@ export async function POST(request: Request) {
         },
         {
           status: 401,
+        }
+      );
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.plan !== "Monthly" && profile?.plan !== "Lifetime") {
+      return NextResponse.json(
+        {
+          error: "Creating trips requires Pro",
+        },
+        {
+          status: 403,
         }
       );
     }
@@ -46,6 +70,12 @@ export async function POST(request: Request) {
 
         cover_image:
           destination.image,
+
+        start_date:
+          destination.start_date || null,
+
+        end_date:
+          destination.end_date || null,
 
         created_by:
           user.id,
@@ -100,7 +130,7 @@ export async function POST(request: Request) {
 
     const formattedActivities =
         destination.activities.map(
-        (activity: any) => ({
+        (activity: DestinationActivity) => ({
             trip_id: trips.id,
 
             title:

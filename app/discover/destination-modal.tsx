@@ -17,11 +17,13 @@ import {
 import { Destination } from "./page";
 
 import { useRouter } from "next/navigation";
+import { Lock } from "lucide-react";
 
 type Props = {
   destination: Destination | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isFreePlan: boolean;
 };
 
 const typography = {
@@ -37,6 +39,7 @@ export function DestinationModal({
   destination,
   open,
   onOpenChange,
+  isFreePlan,
 }: Props) {
 
   const router = useRouter();
@@ -65,6 +68,11 @@ export function DestinationModal({
 
       const data =
         await response.json();
+
+      if (!response.ok) {
+        router.push("/billing");
+        return;
+      }
 
       router.push(
         `/trip/${data.tripId}`
@@ -356,12 +364,24 @@ export function DestinationModal({
 
                 {/* BUTTON */}
                 <button
-                  onClick={() =>
-                    createTrip(destination)
-                  }
-                  className={`mt-4 w-full rounded-2xl bg-white py-5 font-semibold text-black transition hover:bg-neutral-200 ${typography.button}`}
+                  onClick={() => {
+                    if (isFreePlan) {
+                      router.push("/billing");
+                      return;
+                    }
+
+                    createTrip(destination);
+                  }}
+                  className={`mt-4 flex w-full items-center justify-center gap-2 rounded-2xl py-5 font-semibold transition ${
+                    isFreePlan
+                      ? "border border-red-300/25 bg-red-500/10 text-red-100 hover:bg-red-500/15"
+                      : "bg-white text-black hover:bg-neutral-200"
+                  } ${typography.button}`}
                 >
-                  Create Trip
+                  {isFreePlan && <Lock className="h-5 w-5" />}
+                  {isFreePlan
+                    ? "Unlock Pro to create trip"
+                    : "Create Trip"}
                 </button>
               </div>
             </div>
