@@ -84,7 +84,7 @@ export function Sidebar() {
   }, []);
 
   return (
-    <div className="relative z-20 flex h-screen w-[280px] shrink-0 flex-col border-r border-white/10 bg-[#06110d]/92 shadow-[24px_0_80px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+    <div className="fixed inset-y-0 left-0 z-20 hidden h-screen w-[280px] shrink-0 flex-col border-r border-white/10 bg-[#06110d]/92 shadow-[24px_0_80px_rgba(0,0,0,0.28)] backdrop-blur-2xl md:flex">
 
       {/* LOGO */}
       <div className="border-b border-white/10 p-6">
