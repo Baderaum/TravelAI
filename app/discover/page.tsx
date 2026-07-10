@@ -40,8 +40,16 @@ export type Destination = {
 
 export default function DiscoverPage() {
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [plan, setPlan] =
     useState<"Free" | "Monthly" | "Lifetime">("Free");
+  const [discoveryUsage, setDiscoveryUsage] =
+    useState<{
+      used: number;
+      limit: number | null;
+      remaining: number | null;
+      unlimited: boolean;
+    } | null>(null);
 
   const [groupSize, setGroupSize] = useState("3-5");
   const [homeCity, setHomeCity] = useState("");
@@ -86,7 +94,7 @@ export default function DiscoverPage() {
   useEffect(() => {
     const supabase = createClient();
 
-    async function loadPlan() {
+    async function loadPlanAndUsage() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -105,9 +113,22 @@ export default function DiscoverPage() {
       ) {
         setPlan(profile.plan);
       }
+
+      const usageRes = await fetch("/api/discovery-usage");
+
+      if (usageRes.ok) {
+        const usage = await usageRes.json();
+
+        setDiscoveryUsage({
+          used: usage.used ?? 0,
+          limit: usage.limit,
+          remaining: usage.remaining,
+          unlimited: Boolean(usage.unlimited),
+        });
+      }
     }
 
-    loadPlan();
+    loadPlanAndUsage();
   }, []);
 
   useEffect(() => {
@@ -120,7 +141,18 @@ export default function DiscoverPage() {
   }, [results]);
 
   async function generateTrip() {
+    if (
+      plan === "Free" &&
+      discoveryUsage?.remaining === 0
+    ) {
+      setErrorMessage(
+        "Daily discovery limit reached. Upgrade to Pro for unlimited planning."
+      );
+      return;
+    }
+
     setLoading(true);
+    setErrorMessage("");
 
     try {
       const res = await fetch("/api/create-discovery", {
@@ -156,9 +188,47 @@ export default function DiscoverPage() {
 
       const data = await res.json();
 
+      if (!res.ok) {
+        setErrorMessage(
+          data.error ||
+            "Could not generate recommendations."
+        );
+
+        if (typeof data.used === "number") {
+          setDiscoveryUsage((current) => ({
+            used: data.used,
+            limit: data.limit ?? current?.limit ?? 5,
+            remaining: Math.max(
+              (data.limit ?? current?.limit ?? 5) -
+                data.used,
+              0
+            ),
+            unlimited: false,
+          }));
+        }
+
+        return;
+      }
+
       setResults(data.destinations || []);
+
+      const usageRes = await fetch("/api/discovery-usage");
+
+      if (usageRes.ok) {
+        const usage = await usageRes.json();
+
+        setDiscoveryUsage({
+          used: usage.used ?? 0,
+          limit: usage.limit,
+          remaining: usage.remaining,
+          unlimited: Boolean(usage.unlimited),
+        });
+      }
     } catch (error) {
       console.error(error);
+      setErrorMessage(
+        "Could not generate recommendations."
+      );
     } finally {
       setLoading(false);
     }
@@ -171,6 +241,8 @@ export default function DiscoverPage() {
         <FilterBar
           loading={loading}
           isFreePlan={plan === "Free"}
+          discoveryUsage={discoveryUsage}
+          errorMessage={errorMessage}
           groupSize={groupSize}
           setGroupSize={setGroupSize}
           homeCity={homeCity}

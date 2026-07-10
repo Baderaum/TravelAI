@@ -1,9 +1,67 @@
 import { openai } from "@/lib/openai";
 import { NextResponse } from "next/server";
 import { getDestinationImage } from "@/lib/pexels";
+import { createClient } from "@/lib/supabase/server";
+
+const DAILY_DISCOVERY_LIMIT = 5;
 
 export async function POST(req: Request) {
   try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Please Login" },
+        { status: 401 }
+      );
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .single();
+
+    const isFreePlan =
+      profile?.plan !== "Monthly" &&
+      profile?.plan !== "Lifetime";
+
+    if (isFreePlan) {
+      const { data: usageRows, error: usageError } =
+        await supabase.rpc("consume_discovery_usage", {
+          daily_limit: DAILY_DISCOVERY_LIMIT,
+        });
+
+      const usage = Array.isArray(usageRows)
+        ? usageRows[0]
+        : usageRows;
+
+      if (usageError || !usage) {
+        console.error(usageError);
+
+        return NextResponse.json(
+          { error: "Could not check discovery limit" },
+          { status: 500 }
+        );
+      }
+
+      if (!usage.allowed) {
+        return NextResponse.json(
+          {
+            error:
+              "Daily discovery limit reached. Upgrade to Pro for unlimited planning.",
+            used: usage.used_count,
+            limit: usage.limit_count,
+          },
+          { status: 403 }
+        );
+      }
+    }
+
     const body = await req.json();
 
     const {
