@@ -12,11 +12,25 @@ import {
 
 import stripeLogo from "@/screenshots/stripe.png";
 
-const plans = [
+type PlanId = "Free" | "Monthly" | "Lifetime";
+
+type BillingPlan = {
+  id: PlanId;
+  title: string;
+  price: string;
+  interval: string;
+  button: string;
+  icon: typeof Compass;
+  accent: "neutral" | "emerald" | "amber";
+  perks: string[];
+  paid: boolean;
+};
+
+const plans: BillingPlan[] = [
   {
     id: "Free",
     title: "Free",
-    price: "USD 0",
+    price: "$0",
     interval: "current discovery access",
     button: "Current free plan",
     icon: Compass,
@@ -27,7 +41,7 @@ const plans = [
   {
     id: "Monthly",
     title: "Pro Monthly",
-    price: "USD 10",
+    price: "$10",
     interval: "per month",
     button: "Choose monthly",
     icon: Sparkles,
@@ -38,7 +52,7 @@ const plans = [
   {
     id: "Lifetime",
     title: "Pro Lifetime",
-    price: "USD 25",
+    price: "$25",
     interval: "one-time payment",
     button: "Choose lifetime",
     icon: Infinity,
@@ -51,7 +65,7 @@ const plans = [
 export default function BillingPlanCards({
   currentPlan,
 }: {
-  currentPlan: "Free" | "Monthly" | "Lifetime";
+  currentPlan: PlanId;
 }) {
   const [selectedPlan, setSelectedPlan] = useState(currentPlan);
 
