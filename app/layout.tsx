@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   title: "TravelAI | Group Travel OS",
   description:
     "AI-powered discovery, trip planning, itinerary building and budget estimation for group travel.",
+  icons: {
+    icon: "/LOGO.png",
+    shortcut: "/LOGO.png",
+    apple: "/LOGO.png",
+  },
 };
 
 export default function RootLayout({
