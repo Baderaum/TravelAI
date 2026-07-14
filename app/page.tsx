@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import PricingCards from "@/components/landing/pricing-cards";
+import { SiteFooter } from "@/components/legal/site-footer";
 import activitiesScreenshot from "@/screenshots/Activities.png";
 import discoveryResultsScreenshot from "@/screenshots/Discovery_Results.png";
 import tripScreenshot from "@/screenshots/Trip.png";
@@ -340,6 +341,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
